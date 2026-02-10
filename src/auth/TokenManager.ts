@@ -143,12 +143,15 @@ export class TokenManager {
 	 * Validate token structure
 	 */
 	isValidToken(token: any): token is OAuthToken {
+		if (!token || typeof token !== 'object') {
+			return false;
+		}
 		return (
-			token &&
-			typeof token === 'object' &&
 			typeof token.access_token === 'string' &&
 			token.access_token.length > 0 &&
-			typeof token.token_type === 'string'
+			typeof token.token_type === 'string' &&
+			token.token_type.length > 0 &&
+			typeof token.refresh_token === 'string'
 		);
 	}
 
