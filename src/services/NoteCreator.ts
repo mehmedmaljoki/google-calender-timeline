@@ -247,14 +247,10 @@ export class NoteCreator implements INoteCreator {
 	 * Confirm file overwrite with user
 	 */
 	private async confirmOverwrite(filename: string): Promise<boolean> {
-		return new Promise(resolve => {
-			const modal = new (
-				this.app as any
-			).workspace.activeLeaf.view.containerEl.ownerDocument.defaultView.confirm(
-				`File "${filename}" already exists. Overwrite?`
-			);
-			resolve(modal);
-		});
+		const defaultView = (this.app as any).workspace.activeLeaf?.view?.containerEl?.ownerDocument
+			?.defaultView;
+		const confirmFn = (defaultView?.confirm || window.confirm).bind(defaultView || window);
+		return confirmFn(`File "${filename}" already exists. Overwrite?`);
 	}
 
 	/**

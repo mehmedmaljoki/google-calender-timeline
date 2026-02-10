@@ -31,8 +31,6 @@ export class TokenManager {
 
 			// Update cache
 			this.cachedToken = token;
-
-			console.log('Token saved successfully');
 		} catch (error) {
 			console.error('Failed to save token:', error);
 			throw new Error('Failed to save authentication token');
@@ -83,8 +81,6 @@ export class TokenManager {
 
 			// Clear cache
 			this.cachedToken = null;
-
-			console.log('Token cleared successfully');
 		} catch (error) {
 			console.error('Failed to clear token:', error);
 			throw new Error('Failed to clear authentication token');

@@ -16,11 +16,17 @@ global.fetch = jest.fn();
 describe('GoogleAuth', () => {
 	let auth: GoogleAuth;
 	let mockTokenManager: jest.Mocked<TokenManager>;
+	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
+		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		mockTokenManager = createMockTokenManager() as any;
 		auth = new GoogleAuth(mockTokenManager as any);
 		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		consoleErrorSpy.mockRestore();
 	});
 
 	describe('isAuthenticated', () => {

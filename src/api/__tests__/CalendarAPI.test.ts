@@ -16,11 +16,17 @@ global.fetch = jest.fn();
 describe('CalendarAPI', () => {
 	let api: CalendarAPI;
 	let mockAuth: jest.Mocked<GoogleAuth>;
+	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
+		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		mockAuth = createMockAuth() as any;
 		api = new CalendarAPI(mockAuth as any);
 		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		consoleErrorSpy.mockRestore();
 	});
 
 	describe('listCalendars', () => {

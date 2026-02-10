@@ -2,7 +2,7 @@
  * NoteCreator Tests
  */
 
-import { App } from 'obsidian';
+import { App, TFile } from 'obsidian';
 import { createMockEvent, createMockSettings } from '../../__mocks__/factories';
 import { NoteCreator } from '../NoteCreator';
 
@@ -13,12 +13,18 @@ describe('NoteCreator', () => {
 	let noteCreator: NoteCreator;
 	let mockApp: App;
 	let mockSettings: any;
+	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
+		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		mockApp = new App();
 		mockSettings = createMockSettings();
 		noteCreator = new NoteCreator(mockApp, mockSettings);
 		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		consoleErrorSpy.mockRestore();
 	});
 
 	describe('generateFilename', () => {
@@ -290,11 +296,13 @@ Attendees: {{attendees}}`;
 		it('should handle existing files', async () => {
 			// Arrange
 			const event = createMockEvent({ summary: 'Existing Note' });
-			const existingFile = { path: 'Existing Note.md', name: 'Existing Note.md' };
+			mockSettings.fileNamingStrategy = 'title';
+			const existingFile = Object.assign(new TFile(), { path: 'Existing Note.md' });
 			(mockApp.vault.getAbstractFileByPath as jest.Mock).mockReturnValue(existingFile);
-
-			// Mock window.confirm to return false (don't overwrite)
-			global.confirm = jest.fn().mockReturnValue(false);
+			const confirmMock = jest.fn().mockReturnValue(false);
+			const containerEl = document.createElement('div');
+			(containerEl.ownerDocument.defaultView as any).confirm = confirmMock;
+			mockApp.workspace.activeLeaf = { view: { containerEl } } as any;
 
 			// Act
 			const file = await noteCreator.createNote(event);
@@ -307,13 +315,15 @@ Attendees: {{attendees}}`;
 		it('should overwrite existing file if confirmed', async () => {
 			// Arrange
 			const event = createMockEvent({ summary: 'Existing Note' });
-			const existingFile = { path: 'Existing Note.md', name: 'Existing Note.md' };
-			const newFile = { path: 'Existing Note.md', name: 'Existing Note.md' };
+			mockSettings.fileNamingStrategy = 'title';
+			const existingFile = Object.assign(new TFile(), { path: 'Existing Note.md' });
+			const newFile = Object.assign(new TFile(), { path: 'Existing Note.md' });
 			(mockApp.vault.getAbstractFileByPath as jest.Mock).mockReturnValue(existingFile);
 			(mockApp.vault.create as jest.Mock).mockResolvedValue(newFile);
-
-			// Mock window.confirm to return true (overwrite)
-			global.confirm = jest.fn().mockReturnValue(true);
+			const confirmMock = jest.fn().mockReturnValue(true);
+			const containerEl = document.createElement('div');
+			(containerEl.ownerDocument.defaultView as any).confirm = confirmMock;
+			mockApp.workspace.activeLeaf = { view: { containerEl } } as any;
 
 			// Act
 			await noteCreator.createNote(event);

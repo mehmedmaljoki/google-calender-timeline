@@ -19,8 +19,10 @@ describe('SyncService', () => {
 	let syncService: SyncService;
 	let mockPlugin: any;
 	let mockAPI: jest.Mocked<CalendarAPI>;
+	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
+		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 		mockPlugin = createMockPlugin();
 		mockAPI = createMockAPI() as any;
 		syncService = new SyncService(mockPlugin, mockAPI as any);
@@ -29,6 +31,7 @@ describe('SyncService', () => {
 	});
 
 	afterEach(() => {
+		consoleErrorSpy.mockRestore();
 		jest.useRealTimers();
 	});
 
@@ -155,44 +158,50 @@ describe('SyncService', () => {
 
 		it('should not sync if already syncing', async () => {
 			// Arrange
-		let callCount = 0;
-		mockAPI.listCalendars.mockResolvedValue([createMockCalendar()]);
-		mockAPI.listEventsForMultipleCalendars.mockImplementation(async () => {
-			callCount++;
-			if (callCount === 1) {
-				await new Promise(resolve => setTimeout(resolve, 100));
-			}
-			return new Map();
+			let callCount = 0;
+			let resolveFirst: (value: Map<string, any[]>) => void = () => undefined;
+			const firstPromise = new Promise<Map<string, any[]>>(resolve => {
+				resolveFirst = resolve;
+			});
+			mockAPI.listCalendars.mockResolvedValue([createMockCalendar()]);
+			mockAPI.listEventsForMultipleCalendars.mockImplementation(() => {
+				callCount += 1;
+				return callCount === 1 ? firstPromise : Promise.resolve(new Map());
+			});
+
+			// Act
+			const sync1 = syncService.syncNow();
+			await Promise.resolve();
+			const sync2 = syncService.syncNow(); // Should be blocked
+
+			// Assert - second call should be blocked
+			expect(callCount).toBe(1);
+
+			resolveFirst(new Map());
+			await Promise.all([sync1, sync2]);
 		});
 
-		// Act
-		const sync1 = syncService.syncNow();
-		const sync2 = syncService.syncNow(); // Should be blocked
+		it('should filter calendars by selected calendars setting', async () => {
+			// Arrange
+			mockPlugin.settings.selectedCalendars = ['cal1'];
+			const calendar1 = createMockCalendar({ id: 'cal1' });
+			const calendar2 = createMockCalendar({ id: 'cal2' });
+			mockAPI.listCalendars.mockResolvedValue([calendar1, calendar2]);
+			mockAPI.listEventsForMultipleCalendars.mockResolvedValue(new Map());
 
-		await Promise.all([sync1, sync2]);
+			// Act
+			await syncService.syncNow();
 
-		// Assert - second call should be blocked
-		expect(callCount).toBe(1);
-	});
+			// Assert
+			expect(mockAPI.listEventsForMultipleCalendars).toHaveBeenCalledWith(
+				['cal1'],
+				expect.any(Date),
+				expect.any(Date)
+			);
+		});
 
-it('should filter calendars by selected calendars setting', async () => {
-	// Arrange
-	mockPlugin.settings.selectedCalendars = ['cal1'];
-	const calendar1 = createMockCalendar({ id: 'cal1' });
-	const calendar2 = createMockCalendar({ id: 'cal2' });
-	mockAPI.listCalendars.mockResolvedValue([calendar1, calendar2]);
-	mockAPI.listEventsForMultipleCalendars.mockResolvedValue(new Map());
-
-	// Act
-	await syncService.syncNow();
-
-	// Assert
-	expect(mockAPI.listEventsForMultipleCalendars).toHaveBeenCalledWith(
-		['cal1'],
-		expect.any(Date),
-		expect.any(Date)
-	);
-});
+		it('should persist last sync time', async () => {
+			// Arrange
 			const calendar = createMockCalendar();
 			mockAPI.listCalendars.mockResolvedValue([calendar]);
 			mockAPI.listEventsForMultipleCalendars.mockResolvedValue(new Map());
