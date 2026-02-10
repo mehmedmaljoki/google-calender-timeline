@@ -1,0 +1,61 @@
+# Code Owners for Google Calendar Timeline Plugin
+# 
+# This file defines individuals or teams that are responsible
+# for code in this repository. Code owners are automatically
+# requested for review when someone opens a pull request that
+# modifies code that they own.
+#
+# Order is important. The last matching pattern has the most precedence.
+
+# Default owners for everything in the repo
+* @mehmedmaljoki
+
+# Documentation
+*.md @mehmedmaljoki
+/docs/ @mehmedmaljoki
+
+# GitHub configuration
+/.github/ @mehmedmaljoki
+
+# Core plugin code
+/src/ @mehmedmaljoki
+
+# Authentication & Security
+/src/auth/ @mehmedmaljoki
+/SECURITY.md @mehmedmaljoki
+
+# API Layer
+/src/api/ @mehmedmaljoki
+
+# UI Components
+/src/ui/ @mehmedmaljoki
+/styles/ @mehmedmaljoki
+
+# Services (Business Logic)
+/src/services/ @mehmedmaljoki
+
+# Type Definitions
+/src/types/ @mehmedmaljoki
+
+# Tests
+/tests/ @mehmedmaljoki
+*.test.ts @mehmedmaljoki
+*.spec.ts @mehmedmaljoki
+
+# Configuration files
+package.json @mehmedmaljoki
+tsconfig.json @mehmedmaljoki
+.eslintrc.json @mehmedmaljoki
+.prettierrc @mehmedmaljoki
+esbuild.config.mjs @mehmedmaljoki
+
+# Plugin manifest (requires careful review)
+manifest.json @mehmedmaljoki
+versions.json @mehmedmaljoki
+
+# CI/CD Workflows
+/.github/workflows/ @mehmedmaljoki
+
+# Security-sensitive files
+/.github/dependabot.yml @mehmedmaljoki
+/SECURITY.md @mehmedmaljoki

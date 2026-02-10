@@ -1,0 +1,253 @@
+/* Google Calendar Timeline Plugin Styles */
+
+/* Timeline View Container */
+.calendar-timeline-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 0;
+}
+
+/* Timeline Header */
+.timeline-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 15px;
+	border-bottom: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+}
+
+.timeline-header h4 {
+	margin: 0;
+	font-size: 1.1em;
+	font-weight: 600;
+}
+
+.timeline-controls {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+
+.timeline-controls button {
+	padding: 4px 12px;
+	font-size: 0.9em;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border-radius: 4px;
+	transition: all 0.2s;
+}
+
+.timeline-controls button:hover {
+	background: var(--background-modifier-hover);
+}
+
+.timeline-controls button.mod-cta {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.timeline-controls button.mod-cta:hover {
+	background: var(--interactive-accent-hover);
+}
+
+.timeline-date-display {
+	font-size: 0.95em;
+	color: var(--text-muted);
+	font-weight: 500;
+}
+
+/* Timeline Container */
+.timeline-container {
+	flex: 1;
+	overflow: hidden;
+	position: relative;
+}
+
+/* vis-timeline Overrides */
+.vis-timeline {
+	border: none;
+	font-family: var(--font-interface);
+}
+
+.vis-item {
+	border-radius: 4px;
+	border-width: 1px;
+	border-style: solid;
+	font-size: 0.85em;
+	cursor: pointer;
+}
+
+.vis-item.vis-selected {
+	border-width: 2px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.vis-item-content {
+	padding: 4px 8px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.vis-time-axis .vis-text {
+	color: var(--text-normal);
+	font-size: 0.9em;
+}
+
+.vis-panel.vis-center,
+.vis-panel.vis-top,
+.vis-panel.vis-bottom {
+	border-color: var(--background-modifier-border);
+}
+
+.vis-panel.vis-background {
+	background: var(--background-primary);
+}
+
+.vis-labelset .vis-label {
+	color: var(--text-normal);
+	border-color: var(--background-modifier-border);
+}
+
+.vis-time-axis .vis-grid.vis-minor {
+	border-color: var(--background-modifier-border);
+}
+
+.vis-time-axis .vis-grid.vis-major {
+	border-color: var(--background-modifier-border-hover);
+}
+
+.vis-current-time {
+	background-color: var(--text-accent);
+}
+
+/* Event Modal */
+.calendar-event-modal {
+	padding: 20px;
+}
+
+.calendar-event-modal h2 {
+	margin-top: 0;
+	margin-bottom: 20px;
+	color: var(--text-normal);
+}
+
+.event-details {
+	margin-bottom: 24px;
+}
+
+.event-detail {
+	margin-bottom: 16px;
+}
+
+.event-detail strong {
+	display: block;
+	margin-bottom: 4px;
+	color: var(--text-muted);
+	font-size: 0.9em;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.event-detail p {
+	margin: 0;
+	color: var(--text-normal);
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.event-actions {
+	display: flex;
+	gap: 8px;
+	justify-content: flex-end;
+	padding-top: 16px;
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.event-actions button {
+	padding: 8px 16px;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	color: var(--text-normal);
+	border-radius: 4px;
+	font-size: 0.95em;
+	transition: all 0.2s;
+}
+
+.event-actions button:hover {
+	background: var(--background-modifier-hover);
+}
+
+.event-actions button.mod-cta {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+.event-actions button.mod-cta:hover {
+	background: var(--interactive-accent-hover);
+}
+
+/* Settings Tab */
+.setting-item-description {
+	margin-top: 4px;
+}
+
+/* Loading State */
+.timeline-loading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: var(--text-muted);
+	font-size: 1.1em;
+}
+
+/* Empty State */
+.timeline-empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	padding: 40px;
+	text-align: center;
+}
+
+.timeline-empty h3 {
+	margin-bottom: 8px;
+	color: var(--text-normal);
+}
+
+.timeline-empty p {
+	color: var(--text-muted);
+	margin-bottom: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+	.timeline-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 10px;
+	}
+
+	.timeline-controls {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.event-actions {
+		flex-direction: column;
+	}
+
+	.event-actions button {
+		width: 100%;
+	}
+}

@@ -1,0 +1,54 @@
+# Configuration for Label Actions
+# Auto-labels PRs based on changed files
+
+feature:
+  - 'src/**/*.ts'
+  - '!src/**/*.test.ts'
+
+bug:
+  - any: ['fix/*', 'bugfix/*', 'hotfix/*']
+
+documentation:
+  - '*.md'
+  - 'docs/**/*'
+
+dependencies:
+  - 'package.json'
+  - 'package-lock.json'
+
+ci-cd:
+  - '.github/workflows/**'
+  - '.github/actions/**'
+
+tests:
+  - 'tests/**/*'
+  - 'src/**/*.test.ts'
+  - 'src/**/*.spec.ts'
+  - 'jest.config.js'
+
+ui:
+  - 'src/ui/**/*'
+  - 'styles/**/*'
+  - '*.css'
+
+api:
+  - 'src/api/**/*'
+
+auth:
+  - 'src/auth/**/*'
+
+services:
+  - 'src/services/**/*'
+
+security:
+  - 'SECURITY.md'
+  - '.github/dependabot.yml'
+  - 'src/auth/**/*'
+
+configuration:
+  - '*.json'
+  - '*.yml'
+  - '*.yaml'
+  - '.eslintrc*'
+  - '.prettierrc*'
+  - 'tsconfig.json'

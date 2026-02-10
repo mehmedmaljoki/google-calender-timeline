@@ -1,0 +1,101 @@
+name: Greet New Contributors
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Greet first-time contributors
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const isIssue = !!context.payload.issue;
+            const isPR = !!context.payload.pull_request;
+            const author = isIssue ? context.payload.issue.user.login : context.payload.pull_request.user.login;
+            
+            // Get all issues and PRs by this author
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              creator: author,
+              state: 'all'
+            });
+            
+            // Check if this is their first contribution
+            const isFirstContribution = issues.length === 1;
+            
+            if (!isFirstContribution) {
+              console.log(`${author} is not a first-time contributor`);
+              return;
+            }
+            
+            // Greeting message for first-time issue
+            const issueGreeting = `👋 Hi @${author}! 
+
+Thank you for opening your first issue in the **Google Calendar Timeline** project! We appreciate you taking the time to contribute.
+
+Here's what happens next:
+- A maintainer will review your issue soon
+- Please provide any additional context if needed
+- Feel free to ask questions or clarify requirements
+
+In the meantime, you might want to:
+- Check out our [Contributing Guide](../CONTRIBUTING.md)
+- Review the [Project Documentation](../README.md)
+- Join our [Discussions](https://github.com/${context.repo.owner}/${context.repo.repo}/discussions)
+
+We're excited to have you here! 🎉`;
+
+            // Greeting message for first-time PR
+            const prGreeting = `👋 Hi @${author}! 
+
+Thank you for opening your first pull request in the **Google Calendar Timeline** project! 🎉
+
+We appreciate your contribution! Here's what to expect:
+- A maintainer will review your PR soon
+- Please ensure all CI checks pass
+- Be ready to address any feedback or suggestions
+- Feel free to ask questions if you need help
+
+Before merging, please make sure:
+- [ ] All tests pass
+- [ ] Code follows our style guidelines
+- [ ] Documentation is updated (if needed)
+- [ ] Commits follow [Conventional Commits](https://www.conventionalcommits.org/)
+
+Useful resources:
+- [Contributing Guide](../CONTRIBUTING.md)
+- [Development Setup](../docs/DEVELOPMENT.md)
+- [Code of Conduct](../CODE_OF_CONDUCT.md)
+
+Thank you for contributing! 🚀`;
+
+            // Post the greeting
+            if (isIssue) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.issue.number,
+                body: issueGreeting
+              });
+              console.log(`Greeted first-time issue contributor: ${author}`);
+            } else if (isPR) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: prGreeting
+              });
+              console.log(`Greeted first-time PR contributor: ${author}`);
+            }

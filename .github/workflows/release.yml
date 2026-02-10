@@ -1,0 +1,111 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build plugin
+        run: npm run build
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Verify manifest version
+        run: |
+          MANIFEST_VERSION=$(jq -r '.version' manifest.json)
+          if [ "$MANIFEST_VERSION" != "${{ steps.get_version.outputs.VERSION }}" ]; then
+            echo "Error: Version mismatch between tag and manifest.json"
+            echo "Tag version: ${{ steps.get_version.outputs.VERSION }}"
+            echo "Manifest version: $MANIFEST_VERSION"
+            exit 1
+          fi
+
+      - name: Create release archive
+        run: |
+          mkdir -p release
+          cp main.js manifest.json styles.css release/
+          cd release
+          zip -r ../google-calendar-timeline-${{ steps.get_version.outputs.VERSION }}.zip .
+
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.3.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## What's Changed
+
+            ${{ steps.changelog.outputs.changelog }}
+
+            ## Installation
+
+            ### Automatic Installation
+            1. Open Obsidian Settings
+            2. Go to Community Plugins
+            3. Search for "Google Calendar Timeline"
+            4. Click Install
+
+            ### Manual Installation
+            1. Download `google-calendar-timeline-${{ steps.get_version.outputs.VERSION }}.zip`
+            2. Extract to `{vault}/.obsidian/plugins/google-calendar-timeline/`
+            3. Reload Obsidian
+            4. Enable the plugin in Settings
+
+            ## Files
+            - `main.js` - Plugin code
+            - `manifest.json` - Plugin manifest
+            - `styles.css` - Plugin styles
+          files: |
+            google-calendar-timeline-${{ steps.get_version.outputs.VERSION }}.zip
+            main.js
+            manifest.json
+            styles.css
+          draft: false
+          prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version.json
+        run: |
+          cat > version.json << EOF
+          {
+            "version": "${{ steps.get_version.outputs.VERSION }}",
+            "minAppVersion": "1.4.0"
+          }
+          EOF
+
+      - name: Commit version.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: update version.json to ${{ steps.get_version.outputs.VERSION }}'
+          file_pattern: version.json

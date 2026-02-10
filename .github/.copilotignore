@@ -1,0 +1,69 @@
+# GitHub Copilot Configuration
+
+# Ignore patterns for Copilot suggestions
+# These files/directories will not be used for context
+
+# Dependencies and build artifacts
+**/node_modules/**
+**/dist/**
+**/build/**
+**/out/**
+**/.next/**
+**/.cache/**
+**/coverage/**
+
+# Package lock files
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/*.key
+**/*.pem
+**/*.cert
+
+# Git
+**/.git/**
+**/.gitignore
+
+# IDE
+**/.vscode/**
+**/.idea/**
+**/*.swp
+**/*.swo
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Logs
+**/*.log
+**/logs/**
+
+# Test snapshots
+**/__snapshots__/**
+
+# Documentation (use selectively)
+**/LICENSE
+**/CHANGELOG.md
+
+# Large data files
+**/*.zip
+**/*.tar.gz
+**/*.rar
+**/*.7z
+
+# Media files (unless UI related)
+**/*.mp4
+**/*.mov
+**/*.avi
+**/*.mp3
+**/*.wav
+
+# Compiled files
+**/*.map
+**/*.min.js
+**/*.bundle.js
