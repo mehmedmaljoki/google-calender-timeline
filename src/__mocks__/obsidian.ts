@@ -2,6 +2,48 @@
  * Mock for Obsidian API
  */
 
+type ButtonComponent = {
+	setButtonText: (text: string) => ButtonComponent;
+	setCta: () => ButtonComponent;
+	onClick: (cb: () => void) => void;
+};
+
+type ToggleComponent = {
+	setValue: (value: boolean) => ToggleComponent;
+	onChange: (cb: (value: boolean) => void) => void;
+};
+
+type TextComponent = {
+	setPlaceholder: (text: string) => TextComponent;
+	setValue: (value: string) => TextComponent;
+	onChange: (cb: (value: string) => void) => void;
+};
+
+type TextAreaComponent = TextComponent & {
+	inputEl: { rows: number; cols: number };
+};
+
+type DropdownComponent = {
+	addOption: (value: string, display: string) => DropdownComponent;
+	setValue: (value: string) => DropdownComponent;
+	onChange: (cb: (value: string) => void) => void;
+};
+
+type WorkspaceMock = {
+	getLeavesOfType: jest.Mock;
+	getRightLeaf: jest.Mock;
+	revealLeaf: jest.Mock;
+	getLeaf: jest.Mock;
+	trigger: jest.Mock;
+	activeLeaf?: { view?: { containerEl?: HTMLElement } };
+};
+
+type VaultMock = {
+	getAbstractFileByPath: jest.Mock;
+	create: jest.Mock;
+	delete: jest.Mock;
+};
+
 export class Notice {
 	constructor(public message: string) {
 		// Mock implementation
@@ -9,22 +51,22 @@ export class Notice {
 }
 
 export class Plugin {
-	app: any;
-	manifest: any;
+	app: unknown;
+	manifest: unknown;
 
-	async loadData(): Promise<any> {
+	async loadData(): Promise<Record<string, unknown>> {
 		return {};
 	}
 
-	async saveData(_data: any): Promise<void> {
+	async saveData(_data: Record<string, unknown>): Promise<void> {
 		// Mock implementation
 	}
 }
 
 export class PluginSettingTab {
 	constructor(
-		public app: any,
-		public plugin: any
+		public app: unknown,
+		public plugin: unknown
 	) {}
 
 	display(): void {
@@ -47,60 +89,53 @@ export class Setting {
 		return this;
 	}
 
-	addButton(cb: (button: any) => any): this {
-		cb({
-			setButtonText: (_text: string) => ({ onClick: (_cb: () => void) => {} }),
-			setCta: () => ({ onClick: (_cb: () => void) => {} }),
+	addButton(cb: (button: ButtonComponent) => void): this {
+		const button: ButtonComponent = {
+			setButtonText: (_text: string) => button,
+			setCta: () => button,
 			onClick: (_cb: () => void) => {},
-		});
+		};
+		cb(button);
 		return this;
 	}
 
-	addToggle(cb: (toggle: any) => any): this {
-		cb({
-			setValue: (_value: boolean) => ({ onChange: (_cb: (value: boolean) => void) => {} }),
+	addToggle(cb: (toggle: ToggleComponent) => void): this {
+		const toggle: ToggleComponent = {
+			setValue: (_value: boolean) => toggle,
 			onChange: (_cb: (value: boolean) => void) => {},
-		});
+		};
+		cb(toggle);
 		return this;
 	}
 
-	addText(cb: (text: any) => any): this {
-		cb({
-			setPlaceholder: (_text: string) => ({
-				setValue: (_value: string) => ({ onChange: (_cb: (value: string) => void) => {} }),
-			}),
-			setValue: (_value: string) => ({
-				onChange: (_cb: (value: string) => void) => {},
-			}),
+	addText(cb: (text: TextComponent) => void): this {
+		const text: TextComponent = {
+			setPlaceholder: (_text: string) => text,
+			setValue: (_value: string) => text,
 			onChange: (_cb: (value: string) => void) => {},
-		});
+		};
+		cb(text);
 		return this;
 	}
 
-	addTextArea(cb: (text: any) => any): this {
-		cb({
-			setPlaceholder: (_text: string) => ({
-				setValue: (_value: string) => ({ onChange: (_cb: (value: string) => void) => {} }),
-			}),
-			setValue: (_value: string) => ({
-				onChange: (_cb: (value: string) => void) => {},
-			}),
+	addTextArea(cb: (text: TextAreaComponent) => void): this {
+		const textArea: TextAreaComponent = {
+			setPlaceholder: (_text: string) => textArea,
+			setValue: (_value: string) => textArea,
 			onChange: (_cb: (value: string) => void) => {},
 			inputEl: { rows: 10, cols: 50 },
-		});
+		};
+		cb(textArea);
 		return this;
 	}
 
-	addDropdown(cb: (dropdown: any) => any): this {
-		cb({
-			addOption: (_value: string, _display: string) => ({
-				setValue: (_selected: string) => ({ onChange: (_cb: (value: string) => void) => {} }),
-			}),
-			setValue: (_value: string) => ({
-				onChange: (_cb: (value: string) => void) => {},
-			}),
+	addDropdown(cb: (dropdown: DropdownComponent) => void): this {
+		const dropdown: DropdownComponent = {
+			addOption: (_value: string, _display: string) => dropdown,
+			setValue: (_value: string) => dropdown,
 			onChange: (_cb: (value: string) => void) => {},
-		});
+		};
+		cb(dropdown);
 		return this;
 	}
 }
@@ -109,7 +144,7 @@ export class Modal {
 	public contentEl: HTMLElement;
 	public titleEl: HTMLElement;
 
-	constructor(public app: any) {
+	constructor(public app: unknown) {
 		this.contentEl = document.createElement('div');
 		this.titleEl = document.createElement('div');
 	}
@@ -135,7 +170,7 @@ export class ItemView {
 	public contentEl: HTMLElement;
 	public containerEl: HTMLElement;
 
-	constructor(public leaf: any) {
+	constructor(public leaf: unknown) {
 		this.contentEl = document.createElement('div');
 		this.containerEl = document.createElement('div');
 	}
@@ -179,8 +214,8 @@ export class TFile {
 }
 
 export class App {
-	workspace: any;
-	vault: any;
+	workspace: WorkspaceMock;
+	vault: VaultMock;
 
 	constructor() {
 		this.workspace = {
@@ -202,13 +237,13 @@ export class App {
 }
 
 export class WorkspaceLeaf {
-	public view: any;
+	public view: unknown;
 
 	constructor() {
 		this.view = null;
 	}
 
-	setViewState(_state: any): Promise<void> {
+	setViewState(_state: unknown): Promise<void> {
 		return Promise.resolve();
 	}
 

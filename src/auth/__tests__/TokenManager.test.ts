@@ -281,7 +281,7 @@ describe('TokenManager', () => {
 
 		it('should return false if token_type is missing', () => {
 			// Arrange
-			const token = { ...createMockToken(), token_type: '' as any };
+			const token = { ...createMockToken(), token_type: '' };
 
 			// Act
 			const isValid = tokenManager.isValidToken(token);

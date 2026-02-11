@@ -138,16 +138,17 @@ export class TokenManager {
 	/**
 	 * Validate token structure
 	 */
-	isValidToken(token: any): token is OAuthToken {
+	isValidToken(token: unknown): token is OAuthToken {
 		if (!token || typeof token !== 'object') {
 			return false;
 		}
+		const candidate = token as OAuthToken;
 		return (
-			typeof token.access_token === 'string' &&
-			token.access_token.length > 0 &&
-			typeof token.token_type === 'string' &&
-			token.token_type.length > 0 &&
-			typeof token.refresh_token === 'string'
+			typeof candidate.access_token === 'string' &&
+			candidate.access_token.length > 0 &&
+			typeof candidate.token_type === 'string' &&
+			candidate.token_type.length > 0 &&
+			typeof candidate.refresh_token === 'string'
 		);
 	}
 

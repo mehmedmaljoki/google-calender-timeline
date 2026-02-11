@@ -9,7 +9,7 @@ import {
 	createMockPlugin,
 } from '../../__mocks__/factories';
 import { CalendarAPI } from '../../api/CalendarAPI';
-import { SyncStatus } from '../../types/calendar';
+import { CalendarEvent, SyncStatus } from '../../types/calendar';
 import { SyncService } from '../SyncService';
 
 // Mock Obsidian
@@ -17,15 +17,16 @@ jest.mock('obsidian');
 
 describe('SyncService', () => {
 	let syncService: SyncService;
-	let mockPlugin: any;
+	type SyncServicePlugin = ConstructorParameters<typeof SyncService>[0];
+	let mockPlugin: SyncServicePlugin;
 	let mockAPI: jest.Mocked<CalendarAPI>;
 	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
 		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-		mockPlugin = createMockPlugin();
-		mockAPI = createMockAPI() as any;
-		syncService = new SyncService(mockPlugin, mockAPI as any);
+		mockPlugin = createMockPlugin() as unknown as SyncServicePlugin;
+		mockAPI = createMockAPI() as unknown as jest.Mocked<CalendarAPI>;
+		syncService = new SyncService(mockPlugin, mockAPI);
 		jest.clearAllMocks();
 		jest.useFakeTimers();
 	});
@@ -159,8 +160,8 @@ describe('SyncService', () => {
 		it('should not sync if already syncing', async () => {
 			// Arrange
 			let callCount = 0;
-			let resolveFirst: (value: Map<string, any[]>) => void = () => undefined;
-			const firstPromise = new Promise<Map<string, any[]>>(resolve => {
+			let resolveFirst: (value: Map<string, CalendarEvent[]>) => void = () => undefined;
+			const firstPromise = new Promise<Map<string, CalendarEvent[]>>(resolve => {
 				resolveFirst = resolve;
 			});
 			mockAPI.listCalendars.mockResolvedValue([createMockCalendar()]);

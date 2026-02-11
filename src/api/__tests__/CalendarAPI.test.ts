@@ -20,8 +20,8 @@ describe('CalendarAPI', () => {
 
 	beforeEach(() => {
 		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-		mockAuth = createMockAuth() as any;
-		api = new CalendarAPI(mockAuth as any);
+		mockAuth = createMockAuth() as unknown as jest.Mocked<GoogleAuth>;
+		api = new CalendarAPI(mockAuth);
 		jest.clearAllMocks();
 	});
 

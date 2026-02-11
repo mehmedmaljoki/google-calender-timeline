@@ -1,5 +1,5 @@
 import { App, Notice, TFile } from 'obsidian';
-import { CalendarEvent, INoteCreator, PluginSettings } from '../types/calendar';
+import { CalendarEvent, EventDateTime, INoteCreator, PluginSettings } from '../types/calendar';
 
 /**
  * Note Creator Service
@@ -89,10 +89,11 @@ export class NoteCreator implements INoteCreator {
 				filename = this.sanitizeFilename(event.summary);
 				break;
 
-			case 'date-title':
+			case 'date-title': {
 				const dateStr = this.formatDateForFilename(event.start);
 				filename = `${dateStr} - ${this.sanitizeFilename(event.summary)}`;
 				break;
+			}
 
 			case 'custom':
 				if (this.settings.customFileNameTemplate) {
@@ -157,10 +158,9 @@ export class NoteCreator implements INoteCreator {
 	/**
 	 * Format date for display
 	 */
-	private formatDate(eventDateTime: any): string {
-		const date = eventDateTime.dateTime
-			? new Date(eventDateTime.dateTime)
-			: new Date(eventDateTime.date);
+	private formatDate(eventDateTime: EventDateTime): string {
+		const dateValue = eventDateTime.dateTime ?? eventDateTime.date ?? '';
+		const date = new Date(dateValue);
 
 		return date.toLocaleDateString('en-US', {
 			weekday: 'long',
@@ -173,7 +173,7 @@ export class NoteCreator implements INoteCreator {
 	/**
 	 * Format time range for display
 	 */
-	private formatTime(start: any, end: any): string {
+	private formatTime(start: EventDateTime, end: EventDateTime): string {
 		if (!start.dateTime || !end.dateTime) {
 			return 'All day';
 		}
@@ -199,10 +199,9 @@ export class NoteCreator implements INoteCreator {
 	/**
 	 * Format date for filename
 	 */
-	private formatDateForFilename(eventDateTime: any): string {
-		const date = eventDateTime.dateTime
-			? new Date(eventDateTime.dateTime)
-			: new Date(eventDateTime.date);
+	private formatDateForFilename(eventDateTime: EventDateTime): string {
+		const dateValue = eventDateTime.dateTime ?? eventDateTime.date ?? '';
+		const date = new Date(dateValue);
 
 		const year = date.getFullYear();
 		const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -214,7 +213,7 @@ export class NoteCreator implements INoteCreator {
 	/**
 	 * Format time for filename
 	 */
-	private formatTimeForFilename(eventDateTime: any): string {
+	private formatTimeForFilename(eventDateTime: EventDateTime): string {
 		if (!eventDateTime.dateTime) {
 			return 'allday';
 		}
@@ -247,8 +246,11 @@ export class NoteCreator implements INoteCreator {
 	 * Confirm file overwrite with user
 	 */
 	private async confirmOverwrite(filename: string): Promise<boolean> {
-		const defaultView = (this.app as any).workspace.activeLeaf?.view?.containerEl?.ownerDocument
-			?.defaultView;
+		const appWithActiveLeaf = this.app as unknown as {
+			workspace: { activeLeaf?: { view?: { containerEl?: HTMLElement } } };
+		};
+		const defaultView =
+			appWithActiveLeaf.workspace.activeLeaf?.view?.containerEl?.ownerDocument?.defaultView;
 		const confirmFn = (defaultView?.confirm || window.confirm).bind(defaultView || window);
 		return confirmFn(`File "${filename}" already exists. Overwrite?`);
 	}

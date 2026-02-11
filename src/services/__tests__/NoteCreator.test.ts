@@ -4,6 +4,7 @@
 
 import { App, TFile } from 'obsidian';
 import { createMockEvent, createMockSettings } from '../../__mocks__/factories';
+import { PluginSettings } from '../../types/calendar';
 import { NoteCreator } from '../NoteCreator';
 
 // Mock Obsidian
@@ -12,7 +13,7 @@ jest.mock('obsidian');
 describe('NoteCreator', () => {
 	let noteCreator: NoteCreator;
 	let mockApp: App;
-	let mockSettings: any;
+	let mockSettings: PluginSettings;
 	let consoleErrorSpy: jest.SpyInstance;
 
 	beforeEach(() => {
@@ -301,8 +302,12 @@ Attendees: {{attendees}}`;
 			(mockApp.vault.getAbstractFileByPath as jest.Mock).mockReturnValue(existingFile);
 			const confirmMock = jest.fn().mockReturnValue(false);
 			const containerEl = document.createElement('div');
-			(containerEl.ownerDocument.defaultView as any).confirm = confirmMock;
-			mockApp.workspace.activeLeaf = { view: { containerEl } } as any;
+			const defaultView = containerEl.ownerDocument.defaultView as Window;
+			defaultView.confirm = confirmMock;
+			const workspaceWithLeaf = mockApp.workspace as unknown as {
+				activeLeaf?: { view?: { containerEl?: HTMLElement } };
+			};
+			workspaceWithLeaf.activeLeaf = { view: { containerEl } };
 
 			// Act
 			const file = await noteCreator.createNote(event);
@@ -322,8 +327,12 @@ Attendees: {{attendees}}`;
 			(mockApp.vault.create as jest.Mock).mockResolvedValue(newFile);
 			const confirmMock = jest.fn().mockReturnValue(true);
 			const containerEl = document.createElement('div');
-			(containerEl.ownerDocument.defaultView as any).confirm = confirmMock;
-			mockApp.workspace.activeLeaf = { view: { containerEl } } as any;
+			const defaultView = containerEl.ownerDocument.defaultView as Window;
+			defaultView.confirm = confirmMock;
+			const workspaceWithLeaf = mockApp.workspace as unknown as {
+				activeLeaf?: { view?: { containerEl?: HTMLElement } };
+			};
+			workspaceWithLeaf.activeLeaf = { view: { containerEl } };
 
 			// Act
 			await noteCreator.createNote(event);

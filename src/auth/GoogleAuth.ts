@@ -186,7 +186,9 @@ export class GoogleAuth implements IAuth {
 
 			// Listen for message from auth window
 			const messageHandler = (event: MessageEvent) => {
-				if (event.origin !== window.location.origin) return;
+				if (event.origin !== window.location.origin) {
+					return;
+				}
 
 				if (event.data.type === 'oauth-callback') {
 					clearInterval(checkInterval);
@@ -265,7 +267,9 @@ export class GoogleAuth implements IAuth {
 	 */
 	async revokeToken(): Promise<void> {
 		const token = await this.tokenManager.getToken();
-		if (!token) return;
+		if (!token) {
+			return;
+		}
 
 		try {
 			await fetch(`https://oauth2.googleapis.com/revoke?token=${token.access_token}`, {

@@ -20,8 +20,8 @@ describe('GoogleAuth', () => {
 
 	beforeEach(() => {
 		consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-		mockTokenManager = createMockTokenManager() as any;
-		auth = new GoogleAuth(mockTokenManager as any);
+		mockTokenManager = createMockTokenManager() as unknown as jest.Mocked<TokenManager>;
+		auth = new GoogleAuth(mockTokenManager);
 		jest.clearAllMocks();
 	});
 

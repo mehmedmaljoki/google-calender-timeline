@@ -1,19 +1,30 @@
 import { Notice, Plugin } from 'obsidian';
 import { CalendarAPI } from '../api/CalendarAPI';
-import { CalendarEvent, ISyncService, SyncState, SyncStatus } from '../types/calendar';
+import {
+	CalendarEvent,
+	ISyncService,
+	PluginSettings,
+	SyncState,
+	SyncStatus,
+} from '../types/calendar';
+
+type PluginWithSettings = Plugin & {
+	settings: PluginSettings;
+	saveData(data: PluginSettings): Promise<void>;
+};
 
 /**
  * Sync Service
  * Orchestrates calendar synchronization with configurable intervals
  */
 export class SyncService implements ISyncService {
-	private plugin: Plugin;
+	private plugin: PluginWithSettings;
 	private api: CalendarAPI;
 	private syncIntervalId: number | null = null;
 	private state: SyncState;
 	private events: Map<string, CalendarEvent[]> = new Map();
 
-	constructor(plugin: Plugin, api: CalendarAPI) {
+	constructor(plugin: PluginWithSettings, api: CalendarAPI) {
 		this.plugin = plugin;
 		this.api = api;
 		this.state = {
@@ -27,7 +38,7 @@ export class SyncService implements ISyncService {
 	startAutoSync(): void {
 		this.stopAutoSync(); // Clear any existing interval
 
-		const settings = (this.plugin as any).settings;
+		const settings = this.plugin.settings;
 		if (!settings.autoSync) {
 			console.log('Auto-sync is disabled');
 			return;
@@ -72,7 +83,7 @@ export class SyncService implements ISyncService {
 				error: undefined,
 			});
 
-			const settings = (this.plugin as any).settings;
+			const settings = this.plugin.settings;
 
 			// Get selected calendars
 			const calendars = await this.api.listCalendars();
@@ -220,7 +231,7 @@ export class SyncService implements ISyncService {
 	 * Calculate next sync time
 	 */
 	private calculateNextSync(): Date {
-		const settings = (this.plugin as any).settings;
+		const settings = this.plugin.settings;
 		const intervalMs = settings.syncInterval * 60 * 1000;
 		return new Date(Date.now() + intervalMs);
 	}

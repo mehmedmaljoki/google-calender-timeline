@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import GoogleCalendarTimelinePlugin from '../main';
+import { PluginSettings } from '../types/calendar';
 
 /**
  * Settings Tab
@@ -162,7 +163,7 @@ export class SettingsTab extends PluginSettingTab {
 					.addOption('date-title', 'Date - Title')
 					.addOption('custom', 'Custom Template')
 					.setValue(this.plugin.settings.fileNamingStrategy)
-					.onChange(async (value: any) => {
+					.onChange(async (value: PluginSettings['fileNamingStrategy']) => {
 						this.plugin.settings.fileNamingStrategy = value;
 						await this.plugin.saveSettings();
 						this.display();

@@ -1,7 +1,10 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { DataSet, Timeline } from 'vis-timeline/standalone';
 import GoogleCalendarTimelinePlugin from '../main';
-import { Calendar, CalendarEvent } from '../types/calendar';
+import { Calendar, CalendarEvent, TimelineItem } from '../types/calendar';
+import { EventModal } from './EventModal';
+
+type TimelineItemWithEvent = TimelineItem & { event: CalendarEvent };
 
 export const VIEW_TYPE_TIMELINE = 'google-calendar-timeline';
 
@@ -137,7 +140,9 @@ export class TimelineView extends ItemView {
 	 * Refresh timeline with current events
 	 */
 	private refreshTimeline(): void {
-		if (!this.timeline) return;
+		if (!this.timeline) {
+			return;
+		}
 
 		const syncService = this.plugin.syncService;
 		const events = syncService.getEventsForDay(this.currentDate);
@@ -145,7 +150,8 @@ export class TimelineView extends ItemView {
 		const items = events.map(event => this.convertEventToTimelineItem(event));
 
 		// Update timeline data
-		const dataset = (this.timeline as any).itemsData as DataSet<any>;
+		const dataset = (this.timeline as unknown as { itemsData: DataSet<TimelineItemWithEvent> })
+			.itemsData;
 		dataset.clear();
 		dataset.add(items);
 
@@ -158,7 +164,7 @@ export class TimelineView extends ItemView {
 	/**
 	 * Convert calendar event to timeline item
 	 */
-	private convertEventToTimelineItem(event: CalendarEvent): any {
+	private convertEventToTimelineItem(event: CalendarEvent): TimelineItemWithEvent {
 		const start = event.start.dateTime
 			? new Date(event.start.dateTime)
 			: new Date(event.start.date || '');
@@ -208,7 +214,6 @@ export class TimelineView extends ItemView {
 
 		if (event) {
 			// Open event modal
-			const { EventModal } = require('./EventModal');
 			new EventModal(this.app, event, this.plugin).open();
 		}
 	}
@@ -246,7 +251,9 @@ export class TimelineView extends ItemView {
 	 * Update timeline view
 	 */
 	private updateTimeline(): void {
-		if (!this.timeline) return;
+		if (!this.timeline) {
+			return;
+		}
 
 		this.timeline.setWindow(
 			this.getStartOfDay(this.currentDate),

@@ -2,15 +2,42 @@ import { Notice } from 'obsidian';
 import { GoogleAuth } from '../auth/GoogleAuth';
 import {
 	APIError,
+	Attendee,
 	AuthenticationError,
 	Calendar,
 	CalendarEvent,
 	CalendarListEntry,
+	EventPerson,
 	GoogleCalendarListResponse,
 	GoogleEventsListResponse,
 	ICalendarAPI,
 	NetworkError,
 } from '../types/calendar';
+
+interface GoogleCalendarEventDateTime {
+	dateTime?: string;
+	date?: string;
+	timeZone?: string;
+}
+
+interface GoogleCalendarEvent {
+	id: string;
+	summary?: string;
+	description?: string;
+	location?: string;
+	start: GoogleCalendarEventDateTime;
+	end: GoogleCalendarEventDateTime;
+	attendees?: Attendee[];
+	calendarId?: string;
+	colorId?: string;
+	htmlLink: string;
+	recurrence?: string[];
+	status?: CalendarEvent['status'];
+	created?: string;
+	updated?: string;
+	creator?: EventPerson;
+	organizer?: EventPerson;
+}
 
 /**
  * Google Calendar API Wrapper
@@ -152,7 +179,7 @@ export class CalendarAPI implements ICalendarAPI {
 	/**
 	 * Get colors used in Google Calendar
 	 */
-	async getCalendarColors(): Promise<any> {
+	async getCalendarColors(): Promise<Record<string, unknown>> {
 		try {
 			const token = await this.auth.getAccessToken();
 
@@ -194,7 +221,7 @@ export class CalendarAPI implements ICalendarAPI {
 	/**
 	 * Transform Google Calendar API event to our format
 	 */
-	private transformEvent(event: any, calendarId: string): CalendarEvent {
+	private transformEvent(event: GoogleCalendarEvent, calendarId: string): CalendarEvent {
 		return {
 			id: event.id,
 			summary: event.summary || 'Untitled Event',

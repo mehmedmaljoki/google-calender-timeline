@@ -1,3 +1,5 @@
+import type { TFile } from 'obsidian';
+
 /**
  * Google Calendar Event Types
  */
@@ -238,7 +240,7 @@ export class ValidationError extends CalendarError {
  * Cache Types
  */
 
-export interface CacheEntry<T = any> {
+export interface CacheEntry<T = unknown> {
 	data: T;
 	timestamp: number;
 	ttl: number;
@@ -300,10 +302,10 @@ export interface GoogleEventsListResponse {
  */
 
 export interface ILogger {
-	debug(message: string, ...args: any[]): void;
-	info(message: string, ...args: any[]): void;
-	warn(message: string, ...args: any[]): void;
-	error(message: string, ...args: any[]): void;
+	debug(message: string, ...args: unknown[]): void;
+	info(message: string, ...args: unknown[]): void;
+	warn(message: string, ...args: unknown[]): void;
+	error(message: string, ...args: unknown[]): void;
 }
 
 /**
@@ -332,7 +334,7 @@ export interface ISyncService {
 }
 
 export interface INoteCreator {
-	createNote(event: CalendarEvent): Promise<any>;
+	createNote(event: CalendarEvent): Promise<TFile>;
 	generateContent(event: CalendarEvent): string;
 	generateFilename(event: CalendarEvent): string;
 }
