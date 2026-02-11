@@ -123,10 +123,7 @@ describe('SettingsTab', () => {
 
 		tab.display();
 
-		const container = (tab as unknown as { containerEl: HTMLElement }).containerEl;
-		const title = container.querySelector('h2');
-		expect(title?.textContent).toBe('Google Calendar Timeline Settings');
-		expect(container.querySelectorAll('h3').length).toBeGreaterThan(0);
+		// Verify settings are rendered by checking for interactive elements
 		const utils = getTestUtils();
 		expect(utils.toggleChanges.length).toBeGreaterThan(0);
 
@@ -146,10 +143,10 @@ describe('SettingsTab', () => {
 
 		tab.display();
 
-		const container = (tab as unknown as { containerEl: HTMLElement }).containerEl;
-		const title = container.querySelector('h2');
-		expect(title?.textContent).toBe('Google Calendar Timeline Settings');
-		expect(container.querySelectorAll('h3').length).toBeGreaterThan(0);
+		// Verify settings sections are rendered (headings use Setting().setHeading() now)
+		const utils = getTestUtils();
+		// Should have buttons for Connect/Disconnect
+		expect(utils.buttonClicks.length).toBeGreaterThan(0);
 	});
 
 	it('renders custom filename template section when configured', async () => {
@@ -162,9 +159,7 @@ describe('SettingsTab', () => {
 
 		tab.display();
 
-		const container = (tab as unknown as { containerEl: HTMLElement }).containerEl;
-		expect(container.querySelectorAll('h3').length).toBeGreaterThan(0);
-
+		// Verify custom template section is rendered
 		const utils = getTestUtils();
 		expect(utils.dropdownChanges.length).toBeGreaterThan(0);
 		await utils.dropdownChanges[0]('custom');

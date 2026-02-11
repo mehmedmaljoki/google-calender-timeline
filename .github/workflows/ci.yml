@@ -112,3 +112,71 @@ jobs:
       - name: Run npm audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
+  obsidian-validation:
+    name: Obsidian Plugin Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for fetch() usage
+        run: |
+          echo "Checking for fetch() instead of requestUrl..."
+          if grep -rn "fetch(" src/ --include="*.ts" | grep -v "requestUrl" | grep -v "test.ts" | grep -v "mock"; then
+            echo "❌ ERROR: Found fetch() usage. Use requestUrl from Obsidian instead!"
+            exit 1
+          fi
+          echo "✅ No fetch() usage found"
+
+      - name: Check for forbidden console statements
+        run: |
+          echo "Checking for console.log/info/debug..."
+          if grep -rn "console\.\(log\|info\|debug\)" src/ --include="*.ts" | grep -v "test.ts" | grep -v "mock"; then
+            echo "❌ ERROR: Found forbidden console statements!"
+            echo "Only console.error and console.warn are allowed."
+            exit 1
+          fi
+          echo "✅ No forbidden console statements found"
+
+      - name: Check for HTML heading creation
+        run: |
+          echo "Checking for HTML heading creation..."
+          if grep -rn "createEl('h[1-6]'" src/ --include="*.ts" | grep -v "test.ts" | grep -v "mock"; then
+            echo "❌ ERROR: Found HTML heading creation. Use Setting().setHeading() instead!"
+            exit 1
+          fi
+          echo "✅ No HTML heading creation found"
+
+      - name: Check for vault.delete usage
+        run: |
+          echo "Checking for vault.delete()..."
+          if grep -rn "vault\.delete" src/ --include="*.ts" | grep -v "test.ts" | grep -v "mock"; then
+            echo "❌ ERROR: Found vault.delete(). Use fileManager.trashFile() instead!"
+            exit 1
+          fi
+          echo "✅ No vault.delete() usage found"
+
+      - name: Check for detachLeavesOfType in onunload
+        run: |
+          echo "Checking for detachLeavesOfType in onunload..."
+          if grep -A 10 "onunload" src/main.ts | grep "detachLeavesOfType"; then
+            echo "❌ ERROR: Found detachLeavesOfType in onunload!"
+            echo "Don't detach leaves on plugin unload - it resets user's layout."
+            exit 1
+          fi
+          echo "✅ No detachLeavesOfType in onunload"
+
+      - name: Validation Summary
+        run: |
+          echo "✅ All Obsidian plugin validation checks passed!"
+          echo "Plugin is ready for marketplace submission."

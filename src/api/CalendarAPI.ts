@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian';
+import { Notice, requestUrl } from 'obsidian';
 import { GoogleAuth } from '../auth/GoogleAuth';
 import {
 	APIError,
@@ -58,20 +58,22 @@ export class CalendarAPI implements ICalendarAPI {
 		try {
 			const token = await this.auth.getAccessToken();
 
-			const response = await fetch(`${this.BASE_URL}/users/me/calendarList`, {
+			const response = await requestUrl({
+				url: `${this.BASE_URL}/users/me/calendarList`,
+				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Content-Type': 'application/json',
 				},
 			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				await this.handleErrorResponse(response);
 			}
 
-			const data: GoogleCalendarListResponse = await response.json();
+			const data: GoogleCalendarListResponse = response.json;
 
-			return data.items.map(this.transformCalendar);
+			return data.items.map(cal => this.transformCalendar(cal));
 		} catch (error) {
 			console.error('Failed to fetch calendars:', error);
 			if (error instanceof AuthenticationError) {
@@ -96,21 +98,20 @@ export class CalendarAPI implements ICalendarAPI {
 				maxResults: '2500',
 			});
 
-			const response = await fetch(
-				`${this.BASE_URL}/calendars/${encodeURIComponent(calendarId)}/events?${params.toString()}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-				}
-			);
+			const response = await requestUrl({
+				url: `${this.BASE_URL}/calendars/${encodeURIComponent(calendarId)}/events?${params.toString()}`,
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				await this.handleErrorResponse(response);
 			}
 
-			const data: GoogleEventsListResponse = await response.json();
+			const data: GoogleEventsListResponse = response.json;
 
 			return data.items.map(event => this.transformEvent(event, calendarId));
 		} catch (error) {
@@ -126,21 +127,20 @@ export class CalendarAPI implements ICalendarAPI {
 		try {
 			const token = await this.auth.getAccessToken();
 
-			const response = await fetch(
-				`${this.BASE_URL}/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						'Content-Type': 'application/json',
-					},
-				}
-			);
+			const response = await requestUrl({
+				url: `${this.BASE_URL}/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
+				},
+			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				await this.handleErrorResponse(response);
 			}
 
-			const event = await response.json();
+			const event = response.json;
 
 			return this.transformEvent(event, calendarId);
 		} catch (error) {
@@ -183,18 +183,20 @@ export class CalendarAPI implements ICalendarAPI {
 		try {
 			const token = await this.auth.getAccessToken();
 
-			const response = await fetch(`${this.BASE_URL}/colors`, {
+			const response = await requestUrl({
+				url: `${this.BASE_URL}/colors`,
+				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Content-Type': 'application/json',
 				},
 			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				await this.handleErrorResponse(response);
 			}
 
-			return await response.json();
+			return response.json;
 		} catch (error) {
 			console.error('Failed to fetch calendar colors:', error);
 			throw error;
@@ -253,12 +255,16 @@ export class CalendarAPI implements ICalendarAPI {
 	/**
 	 * Handle API error responses
 	 */
-	private async handleErrorResponse(response: Response): Promise<never> {
+	private async handleErrorResponse(response: {
+		status: number;
+		json: unknown;
+		text: string;
+	}): Promise<never> {
 		const statusCode = response.status;
 		let errorMessage = `API request failed with status ${statusCode}`;
 
 		try {
-			const error = await response.json();
+			const error = response.json as { error?: { message?: string }; message?: string };
 			errorMessage = error.error?.message || error.message || errorMessage;
 		} catch {
 			// If error parsing fails, use default message
@@ -292,18 +298,20 @@ export class CalendarAPI implements ICalendarAPI {
 		try {
 			const token = await this.auth.getAccessToken();
 
-			const response = await fetch(`${this.BASE_URL}/users/me/settings/timezone`, {
+			const response = await requestUrl({
+				url: `${this.BASE_URL}/users/me/settings/timezone`,
+				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${token}`,
 					'Content-Type': 'application/json',
 				},
 			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				throw new APIError('Failed to fetch timezone');
 			}
 
-			const data = await response.json();
+			const data = response.json;
 			return data.value;
 		} catch (error) {
 			console.error('Failed to fetch timezone:', error);

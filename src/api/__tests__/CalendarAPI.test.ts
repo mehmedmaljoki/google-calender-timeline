@@ -2,6 +2,7 @@
  * CalendarAPI Tests
  */
 
+import { requestUrl } from 'obsidian';
 import { createMockAuth, createMockEvent } from '../../__mocks__/factories';
 import { GoogleAuth } from '../../auth/GoogleAuth';
 import { APIError, AuthenticationError, NetworkError } from '../../types/calendar';
@@ -9,9 +10,6 @@ import { CalendarAPI } from '../CalendarAPI';
 
 // Mock Obsidian
 jest.mock('obsidian');
-
-// Mock fetch
-global.fetch = jest.fn();
 
 describe('CalendarAPI', () => {
 	let api: CalendarAPI;
@@ -44,9 +42,9 @@ describe('CalendarAPI', () => {
 				],
 			};
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => mockCalendarData,
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: mockCalendarData,
 			});
 
 			// Act
@@ -66,10 +64,9 @@ describe('CalendarAPI', () => {
 
 		it('should handle authentication errors', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 401,
-				json: async () => ({ error: { message: 'Unauthorized' } }),
+				json: { error: { message: 'Unauthorized' } },
 			});
 
 			// Act & Assert
@@ -78,10 +75,9 @@ describe('CalendarAPI', () => {
 
 		it('should handle network errors', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 503,
-				json: async () => ({ error: { message: 'Service unavailable' } }),
+				json: { error: { message: 'Service unavailable' } },
 			});
 
 			// Act & Assert
@@ -104,9 +100,9 @@ describe('CalendarAPI', () => {
 				],
 			};
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => mockEventsData,
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: mockEventsData,
 			});
 
 			const timeMin = new Date('2024-01-01');
@@ -128,9 +124,9 @@ describe('CalendarAPI', () => {
 
 		it('should include query parameters in request', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({ items: [] }),
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: { items: [] },
 			});
 
 			const timeMin = new Date('2024-01-01T00:00:00Z');
@@ -140,25 +136,28 @@ describe('CalendarAPI', () => {
 			await api.listEvents('primary', timeMin, timeMax);
 
 			// Assert
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('timeMin='),
-				expect.any(Object)
+			expect(requestUrl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.stringContaining('timeMin='),
+				})
 			);
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('timeMax='),
-				expect.any(Object)
+			expect(requestUrl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.stringContaining('timeMax='),
+				})
 			);
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('singleEvents=true'),
-				expect.any(Object)
+			expect(requestUrl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.stringContaining('singleEvents=true'),
+				})
 			);
 		});
 
 		it('should handle empty results', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({ items: [] }),
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: { items: [] },
 			});
 
 			// Act
@@ -180,9 +179,9 @@ describe('CalendarAPI', () => {
 				htmlLink: 'https://calendar.google.com/event?eid=123',
 			};
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => mockEventData,
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: mockEventData,
 			});
 
 			// Act
@@ -199,10 +198,9 @@ describe('CalendarAPI', () => {
 
 		it('should handle not found errors', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 404,
-				json: async () => ({ error: { message: 'Not found' } }),
+				json: { error: { message: 'Not found' } },
 			});
 
 			// Act & Assert
@@ -220,14 +218,14 @@ describe('CalendarAPI', () => {
 				items: [createMockEvent({ id: 'event2', calendarId: 'cal2' })],
 			};
 
-			(global.fetch as jest.Mock)
+			(requestUrl as jest.Mock)
 				.mockResolvedValueOnce({
-					ok: true,
-					json: async () => calendar1Events,
+					status: 200,
+					json: calendar1Events,
 				})
 				.mockResolvedValueOnce({
-					ok: true,
-					json: async () => calendar2Events,
+					status: 200,
+					json: calendar2Events,
 				});
 
 			// Act
@@ -249,15 +247,14 @@ describe('CalendarAPI', () => {
 				items: [createMockEvent()],
 			};
 
-			(global.fetch as jest.Mock)
+			(requestUrl as jest.Mock)
 				.mockResolvedValueOnce({
-					ok: false,
 					status: 403,
-					json: async () => ({ error: { message: 'Forbidden' } }),
+					json: { error: { message: 'Forbidden' } },
 				})
 				.mockResolvedValueOnce({
-					ok: true,
-					json: async () => successEvents,
+					status: 200,
+					json: successEvents,
 				});
 
 			// Act
@@ -277,9 +274,9 @@ describe('CalendarAPI', () => {
 	describe('testConnection', () => {
 		it('should return true on successful connection', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({ items: [] }),
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: { items: [] },
 			});
 
 			// Act
@@ -291,10 +288,9 @@ describe('CalendarAPI', () => {
 
 		it('should return false on connection failure', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 401,
-				json: async () => ({ error: { message: 'Unauthorized' } }),
+				json: { error: { message: 'Unauthorized' } },
 			});
 
 			// Act
@@ -308,9 +304,9 @@ describe('CalendarAPI', () => {
 	describe('getUserTimeZone', () => {
 		it('should fetch user timezone', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({ value: 'America/New_York' }),
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: { value: 'America/New_York' },
 			});
 
 			// Act
@@ -322,7 +318,7 @@ describe('CalendarAPI', () => {
 
 		it('should fallback to browser timezone on error', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+			(requestUrl as jest.Mock).mockRejectedValue(new Error('Network error'));
 
 			// Act
 			const timezone = await api.getUserTimeZone();
@@ -336,10 +332,9 @@ describe('CalendarAPI', () => {
 	describe('error handling', () => {
 		it('should throw AuthenticationError for 401 status', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 401,
-				json: async () => ({ error: { message: 'Unauthorized' } }),
+				json: { error: { message: 'Unauthorized' } },
 			});
 
 			// Act & Assert
@@ -348,10 +343,9 @@ describe('CalendarAPI', () => {
 
 		it('should throw NetworkError for 5xx status', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 500,
-				json: async () => ({ error: { message: 'Internal server error' } }),
+				json: { error: { message: 'Internal server error' } },
 			});
 
 			// Act & Assert
@@ -360,10 +354,9 @@ describe('CalendarAPI', () => {
 
 		it('should throw APIError for other status codes', async () => {
 			// Arrange
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 400,
-				json: async () => ({ error: { message: 'Bad request' } }),
+				json: { error: { message: 'Bad request' } },
 			});
 
 			// Act & Assert

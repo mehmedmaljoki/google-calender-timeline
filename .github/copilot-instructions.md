@@ -112,6 +112,177 @@ enum SyncStatus {
 // ❌ Avoid implicit returns in complex functions
 ```
 
+### Obsidian Plugin Guidelines
+
+**⚠️ CRITICAL: These rules are enforced by Obsidian's automated plugin validation!**
+
+Violations will block plugin approval in the Obsidian Community Plugins marketplace.
+
+#### Required Network API
+
+```typescript
+// ✅ CORRECT - Use Obsidian's requestUrl
+import { requestUrl } from 'obsidian';
+
+const response = await requestUrl({
+	url: 'https://api.example.com/data',
+	method: 'GET',
+	headers: {
+		Authorization: `Bearer ${token}`,
+		'Content-Type': 'application/json',
+	},
+	body: JSON.stringify(data), // for POST/PUT
+});
+
+// Access response
+const json = response.json;
+const status = response.status;
+const text = response.text;
+
+// ❌ WRONG - Never use fetch()
+const response = await fetch('https://api.example.com/data');
+```
+
+#### Console Methods
+
+```typescript
+// ✅ ALLOWED - Only these console methods
+console.warn('Warning message');
+console.error('Error message', error);
+console.debug('Debug info'); // Use sparingly
+
+// ❌ FORBIDDEN - Never use these
+console.log('message'); // Not allowed
+console.info('message'); // Not allowed
+```
+
+#### UI Text Formatting
+
+```typescript
+// ✅ CORRECT - Use sentence case
+this.addCommand({
+	name: 'Open timeline', // Sentence case
+	// ...
+});
+
+new Setting(containerEl)
+	.setName('Sync interval') // Sentence case
+	.setDesc('How often to sync with Google calendar (minutes)');
+
+// ❌ WRONG - Don't use title case
+name: 'Open Timeline'; // Title Case - wrong!
+setName('Sync Interval'); // Title Case - wrong!
+```
+
+#### Settings UI (Headings)
+
+```typescript
+// ✅ CORRECT - Use Setting().setHeading()
+new Setting(containerEl).setName('General settings').setHeading();
+
+new Setting(containerEl).setName('Authentication').setHeading();
+
+// ❌ WRONG - Don't create HTML headings directly
+containerEl.createEl('h2', { text: 'Settings' });
+containerEl.createEl('h3', { text: 'Authentication' });
+```
+
+#### Method Scoping (this binding)
+
+```typescript
+// ✅ CORRECT - Use arrow functions in callbacks
+return data.items.map(item => this.transformItem(item));
+
+// ✅ CORRECT - Explicitly bind this
+return data.items.map(this.transformItem.bind(this));
+
+// ✅ CORRECT - Annotate with this: void if method doesn't use this
+private static processData(this: void, data: string): string {
+	return data.trim();
+}
+
+// ❌ WRONG - Direct method reference loses this context
+return data.items.map(this.transformItem);
+```
+
+#### Promise Handling
+
+```typescript
+// ✅ CORRECT - Always await or handle promises
+await this.syncService.syncNow();
+
+// ✅ CORRECT - Catch errors
+this.syncService.syncNow().catch(error => {
+	console.error('Sync failed:', error);
+});
+
+// ✅ CORRECT - Use void operator for fire-and-forget
+void this.syncService.syncNow();
+
+// ❌ WRONG - Unhandled promise
+this.syncService.syncNow(); // Missing await/catch/void
+```
+
+#### Plugin Lifecycle
+
+```typescript
+// ✅ CORRECT - onunload should not detach views
+onunload(): void {
+	this.syncService.stopAutoSync();
+	// Don't detach leaves - keeps user's layout intact
+}
+
+// ❌ WRONG - Don't detach leaves in onunload
+async onunload() {
+	this.app.workspace.detachLeavesOfType(VIEW_TYPE); // Wrong!
+}
+
+// ✅ CORRECT - Match return types with base class
+async onOpen(): Promise<void> {
+	// Implementation
+}
+
+// ❌ WRONG - Mismatched return type
+onOpen(): void {  // Should return Promise<void>
+	// Implementation
+}
+```
+
+#### File Operations
+
+```typescript
+// ✅ CORRECT - Use FileManager.trashFile() to respect user preferences
+await this.app.fileManager.trashFile(file);
+
+// ❌ WRONG - Don't use Vault.delete() directly
+await this.app.vault.delete(file);
+```
+
+#### Before Submitting to Marketplace
+
+Run these checks:
+
+```bash
+# Build without errors
+npm run build
+
+# All tests passing
+npm test
+
+# Run ESLint with Obsidian rules
+npm run lint
+```
+
+**Common Validation Errors:**
+
+- ❌ Using `fetch()` instead of `requestUrl()`
+- ❌ Using `console.log()` or `console.info()`
+- ❌ Title Case in UI text instead of sentence case
+- ❌ Creating HTML headings instead of using `Setting().setHeading()`
+- ❌ Unhandled promises in event handlers
+- ❌ Method references without proper `this` binding
+- ❌ Detaching leaves in `onunload()`
+
 ### Naming Conventions
 
 - **Classes**: PascalCase (`CalendarAPI`, `SyncService`)

@@ -40,13 +40,10 @@ export class SyncService implements ISyncService {
 
 		const settings = this.plugin.settings;
 		if (!settings.autoSync) {
-			console.log('Auto-sync is disabled');
 			return;
 		}
 
 		const intervalMs = settings.syncInterval * 60 * 1000;
-
-		console.log(`Starting auto-sync with interval: ${settings.syncInterval} minutes`);
 
 		// Initial sync
 		this.syncNow();
@@ -64,7 +61,6 @@ export class SyncService implements ISyncService {
 		if (this.syncIntervalId !== null) {
 			window.clearInterval(this.syncIntervalId);
 			this.syncIntervalId = null;
-			console.log('Auto-sync stopped');
 		}
 	}
 
@@ -73,7 +69,6 @@ export class SyncService implements ISyncService {
 	 */
 	async syncNow(): Promise<void> {
 		if (this.state.status === SyncStatus.Syncing) {
-			console.log('Sync already in progress');
 			return;
 		}
 
@@ -124,9 +119,6 @@ export class SyncService implements ISyncService {
 				nextSync: this.calculateNextSync(),
 			});
 
-			console.log(
-				`Synced ${this.getTotalEventCount()} events from ${selectedCalendars.length} calendars`
-			);
 			new Notice(`Calendar sync complete: ${this.getTotalEventCount()} events`);
 
 			// Trigger UI update
@@ -203,7 +195,6 @@ export class SyncService implements ISyncService {
 	 */
 	clearCache(): void {
 		this.events.clear();
-		console.log('Event cache cleared');
 	}
 
 	/**

@@ -28,14 +28,14 @@ export class TimelineView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'Calendar Timeline';
+		return 'Calendar timeline';
 	}
 
 	getIcon(): string {
 		return 'calendar';
 	}
 
-	async onOpen() {
+	async onOpen(): Promise<void> {
 		this.container = this.contentEl;
 		this.container.empty();
 		this.container.addClass('google-calendar-timeline-view');
@@ -55,7 +55,7 @@ export class TimelineView extends ItemView {
 		this.refreshTimeline();
 	}
 
-	async onClose() {
+	async onClose(): Promise<void> {
 		if (this.timeline) {
 			this.timeline.destroy();
 			this.timeline = null;
@@ -69,7 +69,7 @@ export class TimelineView extends ItemView {
 		const header = this.container.createDiv('timeline-header');
 
 		// Title
-		header.createEl('h4', { text: 'Calendar Timeline' });
+		header.createEl('h4', { text: 'Calendar timeline' });
 
 		// Controls
 		const controls = header.createDiv('timeline-controls');

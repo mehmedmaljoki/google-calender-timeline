@@ -54,9 +54,11 @@ export class EventModal extends Modal {
 			text: 'Create Note',
 			cls: 'mod-cta',
 		});
-		createNoteBtn.addEventListener('click', async () => {
-			await this.plugin.noteCreator.createNote(this.event);
-			this.close();
+		createNoteBtn.addEventListener('click', () => {
+			void (async () => {
+				await this.plugin.noteCreator.createNote(this.event);
+				this.close();
+			})();
 		});
 
 		// Open in Google Calendar button

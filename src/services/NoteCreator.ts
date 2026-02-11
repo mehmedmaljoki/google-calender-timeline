@@ -25,12 +25,12 @@ export class NoteCreator implements INoteCreator {
 			// Check if file already exists
 			const existingFile = this.app.vault.getAbstractFileByPath(filename);
 			if (existingFile instanceof TFile) {
-				const overwrite = await this.confirmOverwrite(filename);
+				const overwrite = this.confirmOverwrite(filename);
 				if (!overwrite) {
 					return existingFile;
 				}
 				// Delete existing file
-				await this.app.vault.delete(existingFile);
+				await this.app.fileManager.trashFile(existingFile);
 			}
 
 			// Create the note
@@ -245,7 +245,7 @@ export class NoteCreator implements INoteCreator {
 	/**
 	 * Confirm file overwrite with user
 	 */
-	private async confirmOverwrite(filename: string): Promise<boolean> {
+	private confirmOverwrite(filename: string): boolean {
 		const appWithActiveLeaf = this.app as unknown as {
 			workspace: { activeLeaf?: { view?: { containerEl?: HTMLElement } } };
 		};

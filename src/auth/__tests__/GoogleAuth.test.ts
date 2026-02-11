@@ -2,6 +2,7 @@
  * GoogleAuth Tests
  */
 
+import { requestUrl } from 'obsidian';
 import { createMockToken, createMockTokenManager } from '../../__mocks__/factories';
 import { AuthenticationError, OAuthToken } from '../../types/calendar';
 import { GoogleAuth } from '../GoogleAuth';
@@ -9,9 +10,6 @@ import { TokenManager } from '../TokenManager';
 
 // Mock Obsidian
 jest.mock('obsidian');
-
-// Mock fetch
-global.fetch = jest.fn();
 
 describe('GoogleAuth', () => {
 	let auth: GoogleAuth;
@@ -84,12 +82,12 @@ describe('GoogleAuth', () => {
 			mockTokenManager.getToken.mockResolvedValue(expiredToken);
 			mockTokenManager.isTokenExpired.mockReturnValue(true);
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: {
 					access_token: newToken.access_token,
 					expires_in: 3600,
-				}),
+				},
 			});
 
 			// Act
@@ -107,12 +105,12 @@ describe('GoogleAuth', () => {
 			const oldToken = createMockToken();
 			mockTokenManager.getToken.mockResolvedValue(oldToken);
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
-				json: async () => ({
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
+				json: {
 					access_token: 'new_access_token',
 					expires_in: 3600,
-				}),
+				},
 			});
 
 			// Act
@@ -142,8 +140,7 @@ describe('GoogleAuth', () => {
 			const token = createMockToken();
 			mockTokenManager.getToken.mockResolvedValue(token);
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: false,
+			(requestUrl as jest.Mock).mockResolvedValue({
 				status: 400,
 			});
 
@@ -168,17 +165,18 @@ describe('GoogleAuth', () => {
 			const token = createMockToken();
 			mockTokenManager.getToken.mockResolvedValue(token);
 
-			(global.fetch as jest.Mock).mockResolvedValue({
-				ok: true,
+			(requestUrl as jest.Mock).mockResolvedValue({
+				status: 200,
 			});
 
 			// Act
 			await auth.revokeToken();
 
 			// Assert
-			expect(global.fetch).toHaveBeenCalledWith(
-				expect.stringContaining('revoke'),
-				expect.any(Object)
+			expect(requestUrl).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: expect.stringContaining('revoke'),
+				})
 			);
 			expect(mockTokenManager.clearToken).toHaveBeenCalled();
 		});
@@ -188,7 +186,7 @@ describe('GoogleAuth', () => {
 			const token = createMockToken();
 			mockTokenManager.getToken.mockResolvedValue(token);
 
-			(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'));
+			(requestUrl as jest.Mock).mockRejectedValue(new Error('Network error'));
 
 			// Act
 			await auth.revokeToken();
@@ -205,7 +203,7 @@ describe('GoogleAuth', () => {
 			await auth.revokeToken();
 
 			// Assert
-			expect(global.fetch).not.toHaveBeenCalled();
+			expect(requestUrl).not.toHaveBeenCalled();
 		});
 	});
 

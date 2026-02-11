@@ -243,7 +243,34 @@ npm run lint
 
 # Format code
 npm run format
+
+# Validate for Obsidian marketplace submission
+npm run validate:obsidian
+
+# Full validation (build + test + lint + obsidian checks)
+npm run validate
 ```
+
+### Obsidian Plugin Validation
+
+Before submitting to the Obsidian Community Plugins marketplace, run:
+
+```bash
+# Check for all Obsidian-specific requirements
+npm run validate:obsidian
+```
+
+This validates:
+
+- ✅ No `fetch()` usage (must use `requestUrl` from Obsidian)
+- ✅ No forbidden console statements (`console.log`, `console.info`, `console.debug`)
+- ✅ No direct HTML heading creation (must use `Setting().setHeading()`)
+- ✅ No `vault.delete()` usage (must use `fileManager.trashFile()`)
+- ✅ No `detachLeavesOfType()` in `onunload()`
+
+**These rules are enforced by Obsidian's automated validation!** Violations will block marketplace approval.
+
+See [.github/copilot-instructions.md](.github/copilot-instructions.md#obsidian-plugin-guidelines) for complete guidelines.
 
 ### Testing
 

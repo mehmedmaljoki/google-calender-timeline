@@ -18,35 +18,39 @@ export class SettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl('h2', { text: 'Google Calendar Timeline Settings' });
+		new Setting(containerEl).setName('Google Calendar Timeline Settings').setHeading();
 
 		// Authentication Section
-		containerEl.createEl('h3', { text: 'Authentication' });
+		new Setting(containerEl).setName('Authentication').setHeading();
 
 		new Setting(containerEl)
 			.setName('Google Account')
 			.setDesc(
-				this.plugin.auth.isAuthenticated() ? '✅ Connected to Google Calendar' : '❌ Not connected'
+				this.plugin.auth.isAuthenticated() ? '✅ Connected to Google calendar' : '❌ Not connected'
 			)
 			.addButton(button => {
 				if (this.plugin.auth.isAuthenticated()) {
-					button.setButtonText('Disconnect').onClick(async () => {
-						await this.plugin.auth.logout();
-						this.display();
+					button.setButtonText('Disconnect').onClick(() => {
+						void (async () => {
+							await this.plugin.auth.logout();
+							this.display();
+						})();
 					});
 				} else {
 					button
 						.setButtonText('Connect')
 						.setCta()
-						.onClick(async () => {
-							await this.plugin.auth.login();
-							this.display();
+						.onClick(() => {
+							void (async () => {
+								await this.plugin.auth.login();
+								this.display();
+							})();
 						});
 				}
 			});
 
 		// Sync Settings
-		containerEl.createEl('h3', { text: 'Synchronization' });
+		new Setting(containerEl).setName('Synchronization').setHeading();
 
 		new Setting(containerEl)
 			.setName('Auto-sync')
@@ -65,7 +69,7 @@ export class SettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Sync interval')
-			.setDesc('How often to sync with Google Calendar (minutes)')
+			.setDesc('How often to sync with Google calendar (minutes)')
 			.addText(text =>
 				text
 					.setPlaceholder('15')
@@ -82,16 +86,16 @@ export class SettingsTab extends PluginSettingTab {
 			.setName('Sync now')
 			.setDesc('Manually trigger calendar sync')
 			.addButton(button =>
-				button.setButtonText('Sync').onClick(async () => {
-					await this.plugin.syncService.syncNow();
+				button.setButtonText('Sync').onClick(() => {
+					void this.plugin.syncService.syncNow();
 				})
 			);
 
 		// Display Settings
-		containerEl.createEl('h3', { text: 'Display' });
+		new Setting(containerEl).setName('Display').setHeading();
 
 		new Setting(containerEl)
-			.setName('Use Google Calendar colors')
+			.setName('Use Google calendar colors')
 			.setDesc('Use original calendar colors from Google')
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.useGoogleColors).onChange(async value => {
@@ -139,7 +143,7 @@ export class SettingsTab extends PluginSettingTab {
 			);
 
 		// Note Settings
-		containerEl.createEl('h3', { text: 'Note Creation' });
+		new Setting(containerEl).setName('Note creation').setHeading();
 
 		new Setting(containerEl)
 			.setName('Note location')
@@ -159,9 +163,9 @@ export class SettingsTab extends PluginSettingTab {
 			.setDesc('How to name created note files')
 			.addDropdown(dropdown =>
 				dropdown
-					.addOption('title', 'Event Title')
-					.addOption('date-title', 'Date - Title')
-					.addOption('custom', 'Custom Template')
+					.addOption('title', 'Event title')
+					.addOption('date-title', 'Date - title')
+					.addOption('custom', 'Custom template')
 					.setValue(this.plugin.settings.fileNamingStrategy)
 					.onChange(async (value: string) => {
 						this.plugin.settings.fileNamingStrategy = value as PluginSettings['fileNamingStrategy'];

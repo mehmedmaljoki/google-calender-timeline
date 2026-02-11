@@ -21,8 +21,6 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 	noteCreator!: NoteCreator;
 
 	async onload() {
-		console.log('Loading Google Calendar Timeline Plugin');
-
 		// Load settings
 		await this.loadSettings();
 
@@ -37,14 +35,14 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 		this.registerView(VIEW_TYPE_TIMELINE, leaf => new TimelineView(leaf, this));
 
 		// Add ribbon icon
-		this.addRibbonIcon('calendar', 'Open Calendar Timeline', () => {
+		this.addRibbonIcon('calendar', 'Open calendar timeline', () => {
 			this.activateView();
 		});
 
 		// Add commands
 		this.addCommand({
 			id: 'open-timeline',
-			name: 'Open Timeline',
+			name: 'Open timeline',
 			callback: () => {
 				this.activateView();
 			},
@@ -73,7 +71,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'connect-google',
-			name: 'Connect to Google Calendar',
+			name: 'Connect to Google calendar',
 			callback: async () => {
 				if (this.auth.isAuthenticated()) {
 					new Notice('Already connected to Google Calendar');
@@ -85,14 +83,14 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'disconnect-google',
-			name: 'Disconnect from Google Calendar',
+			name: 'Disconnect from Google calendar',
 			callback: async () => {
 				if (!this.auth.isAuthenticated()) {
 					new Notice('Not connected to Google Calendar');
 					return;
 				}
 				await this.auth.logout();
-				new Notice('Disconnected from Google Calendar');
+				new Notice('Disconnected from Google calendar');
 			},
 		});
 
@@ -108,14 +106,11 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 		// Authentication changes will be handled by the auth service
 	}
 
-	async onunload() {
-		console.log('Unloading Google Calendar Timeline Plugin');
-
+	onunload(): void {
 		// Stop auto-sync
 		this.syncService.stopAutoSync();
 
-		// Detach timeline views
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_TIMELINE);
+		// Note: Don't detach leaves as that will reset the leaf to its default location
 	}
 
 	async loadSettings() {

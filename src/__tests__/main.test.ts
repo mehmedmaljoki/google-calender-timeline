@@ -180,16 +180,15 @@ describe('GoogleCalendarTimelinePlugin', () => {
 		expect(revealSpy).not.toHaveBeenCalled();
 	});
 
-	it('stops sync and detaches views on unload', async () => {
+	it('stops sync on unload', async () => {
 		const plugin = setupPlugin();
 		await plugin.onload();
 		const stopSpy = jest.spyOn(plugin.syncService, 'stopAutoSync');
 
-		await plugin.onunload();
+		plugin.onunload();
 
 		expect(stopSpy).toHaveBeenCalled();
-		expect(
-			(plugin.app.workspace as unknown as { detachLeavesOfType: jest.Mock }).detachLeavesOfType
-		).toHaveBeenCalledWith(VIEW_TYPE_TIMELINE);
+		// Note: We don't detach leaves on unload as per Obsidian recommendations
+		// This allows users to keep their view positions when reloading the plugin
 	});
 });

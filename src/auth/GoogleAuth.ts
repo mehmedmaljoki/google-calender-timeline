@@ -1,4 +1,4 @@
-import { Notice } from 'obsidian';
+import { Notice, requestUrl } from 'obsidian';
 import { AuthenticationError, IAuth, OAuthToken } from '../types/calendar';
 import { TokenManager } from './TokenManager';
 
@@ -107,7 +107,8 @@ export class GoogleAuth implements IAuth {
 		}
 
 		try {
-			const response = await fetch(this.TOKEN_ENDPOINT, {
+			const response = await requestUrl({
+				url: this.TOKEN_ENDPOINT,
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -117,14 +118,14 @@ export class GoogleAuth implements IAuth {
 					client_secret: this.CLIENT_SECRET,
 					refresh_token: token.refresh_token,
 					grant_type: 'refresh_token',
-				}),
+				}).toString(),
 			});
 
-			if (!response.ok) {
+			if (response.status !== 200) {
 				throw new AuthenticationError('Failed to refresh token');
 			}
 
-			const data = await response.json();
+			const data = response.json;
 
 			// Update token with new access token
 			const updatedToken: OAuthToken = {
@@ -220,7 +221,8 @@ export class GoogleAuth implements IAuth {
 	 * Exchange authorization code for access token
 	 */
 	private async exchangeCodeForToken(code: string): Promise<OAuthToken> {
-		const response = await fetch(this.TOKEN_ENDPOINT, {
+		const response = await requestUrl({
+			url: this.TOKEN_ENDPOINT,
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
@@ -231,17 +233,17 @@ export class GoogleAuth implements IAuth {
 				code: code,
 				redirect_uri: this.REDIRECT_URI,
 				grant_type: 'authorization_code',
-			}),
+			}).toString(),
 		});
 
-		if (!response.ok) {
-			const error = await response.json();
+		if (response.status !== 200) {
+			const error = response.json;
 			throw new AuthenticationError(
 				`Token exchange failed: ${error.error_description || error.error}`
 			);
 		}
 
-		const data = await response.json();
+		const data = response.json;
 
 		return {
 			access_token: data.access_token,
@@ -272,7 +274,8 @@ export class GoogleAuth implements IAuth {
 		}
 
 		try {
-			await fetch(`https://oauth2.googleapis.com/revoke?token=${token.access_token}`, {
+			await requestUrl({
+				url: `https://oauth2.googleapis.com/revoke?token=${token.access_token}`,
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',

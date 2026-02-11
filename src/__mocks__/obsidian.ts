@@ -51,11 +51,24 @@ type VaultMock = {
 	delete: jest.Mock;
 };
 
+type FileManagerMock = {
+	trashFile: jest.Mock;
+};
+
 export class Notice {
 	constructor(public message: string) {
 		// Mock implementation
 	}
 }
+
+// Mock requestUrl function
+export const requestUrl = jest.fn().mockResolvedValue({
+	status: 200,
+	headers: {},
+	text: '{}',
+	json: {},
+	arrayBuffer: new ArrayBuffer(0),
+});
 
 export class Plugin {
 	app: unknown;
@@ -93,6 +106,10 @@ export class Setting {
 	}
 
 	setDesc(_desc: string): this {
+		return this;
+	}
+
+	setHeading(): this {
 		return this;
 	}
 
@@ -233,6 +250,7 @@ export class TFile {
 export class App {
 	workspace: WorkspaceMock;
 	vault: VaultMock;
+	fileManager: FileManagerMock;
 
 	constructor() {
 		this.workspace = {
@@ -249,6 +267,10 @@ export class App {
 				.fn()
 				.mockImplementation((path: string, _content: string) => Promise.resolve(new TFile(path))),
 			delete: jest.fn().mockResolvedValue(undefined),
+		};
+
+		this.fileManager = {
+			trashFile: jest.fn().mockResolvedValue(undefined),
 		};
 	}
 }

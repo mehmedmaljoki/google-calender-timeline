@@ -501,6 +501,231 @@ describe('Service Results', () => {
 
 ---
 
+## ⚠️ Obsidian Plugin Validation Rules
+
+**CRITICAL: Obsidian's automated plugin validation enforces these rules!**
+
+Violations will block marketplace approval. Always test for these before submitting:
+
+### Network Requests
+
+```typescript
+// ✅ CORRECT - Use requestUrl
+import { requestUrl } from 'obsidian';
+
+const response = await requestUrl({
+	url: 'https://api.google.com/calendar',
+	method: 'GET',
+	headers: { Authorization: `Bearer ${token}` },
+});
+
+// ❌ WRONG - fetch() will fail validation
+const response = await fetch('https://api.google.com/calendar');
+```
+
+**Test For:**
+
+```typescript
+// In your tests, mock requestUrl
+import { requestUrl } from 'obsidian';
+jest.mock('obsidian');
+
+(requestUrl as jest.Mock).mockResolvedValue({
+	status: 200,
+	json: { data: 'response' },
+});
+```
+
+### Console Methods
+
+```typescript
+// ✅ ALLOWED
+console.error('Error occurred', error);
+console.warn('Warning message');
+
+// ❌ FORBIDDEN - Will fail validation
+console.log('Debug info'); // Remove all console.log
+console.info('Info message'); // Remove all console.info
+console.debug('Debug info'); // Remove all console.debug
+```
+
+**Grep Check Before Commit:**
+
+```bash
+# Should return ZERO results
+grep -r "console\.log\|console\.info\|console\.debug" src/
+```
+
+### UI Text Format
+
+```typescript
+// ✅ CORRECT - Sentence case
+this.addCommand({
+	name: 'Open timeline', // First word capitalized only
+});
+
+new Setting(containerEl)
+	.setName('Sync interval') // Sentence case
+	.setDesc('Set the sync frequency');
+
+// ❌ WRONG - Title Case
+name: 'Open Timeline'; // Will fail validation
+setName('Sync Interval');
+```
+
+**Regex Check:**
+
+```bash
+# Find potential Title Case violations
+grep -E "setName\('([A-Z][a-z]+ ){2,}" src/
+```
+
+### Settings Headings
+
+```typescript
+// ✅ CORRECT
+new Setting(containerEl).setName('General settings').setHeading();
+
+// ❌ WRONG
+containerEl.createEl('h2', { text: 'Settings' });
+```
+
+### Method Scoping (this)
+
+```typescript
+// ✅ CORRECT - Arrow function preserves this
+data.items.map(item => this.transform(item));
+
+// ✅ CORRECT - Explicit bind
+data.items.map(this.transform.bind(this));
+
+// ❌ WRONG - Direct method reference
+data.items.map(this.transform);
+```
+
+### Promise Handling
+
+```typescript
+// ✅ CORRECT
+await this.syncService.syncNow();
+
+// ✅ CORRECT
+this.syncService.syncNow().catch(console.error);
+
+// ✅ CORRECT - Fire and forget
+void this.syncService.syncNow();
+
+// ❌ WRONG - Unhandled promise
+this.syncService.syncNow();
+```
+
+### Plugin Lifecycle
+
+```typescript
+// ✅ CORRECT
+onunload(): void {
+	this.service.cleanup();
+	// Don't detach views - preserves user layout
+}
+
+// ❌ WRONG
+async onunload() {  // Should be sync
+	this.app.workspace.detachLeavesOfType(VIEW_TYPE);
+}
+```
+
+### File Operations
+
+```typescript
+// ✅ CORRECT - Respects user preferences
+await this.app.fileManager.trashFile(file);
+
+// ❌ WRONG
+await this.app.vault.delete(file);
+```
+
+### Pre-Submission Validation
+
+Run these checks:
+
+```bash
+# 1. Build check
+npm run build
+
+# 2. All tests
+npm test
+
+# 3. ESLint with Obsidian rules
+npm run lint
+
+# 4. Search for forbidden patterns
+echo "Checking for console.log/info/debug..."
+grep -rn "console\.\(log\|info\|debug\)" src/ && echo "❌ Found forbidden console statements!" || echo "✅ Clean"
+
+echo "Checking for fetch() usage..."
+grep -rn "fetch(" src/ && echo "❌ Found fetch()! Use requestUrl" || echo "✅ Clean"
+
+echo "Checking for HTML heading creation..."
+grep -rn "createEl('h[1-6]'" src/ && echo "❌ Found HTML headings! Use setHeading()" || echo "✅ Clean"
+```
+
+### Add to package.json
+
+```json
+{
+	"scripts": {
+		"validate": "npm run build && npm test && npm run lint && npm run check:obsidian",
+		"check:obsidian": "bash scripts/validate-obsidian.sh"
+	}
+}
+```
+
+### Create Validation Script
+
+**File**: `scripts/validate-obsidian.sh`
+
+```bash
+#!/bin/bash
+
+echo "🔍 Validating Obsidian Plugin Requirements..."
+
+ERRORS=0
+
+# Check for fetch()
+if grep -rn "fetch(" src/ --include="*.ts" | grep -v "requestUrl" | grep -v "test.ts" | grep -v "mock"; then
+	echo "❌ ERROR: Found fetch() usage. Use requestUrl instead!"
+	ERRORS=$((ERRORS + 1))
+fi
+
+# Check for console.log/info/debug
+if grep -rn "console\.\(log\|info\|debug\)" src/ --include="*.ts" | grep -v "test.ts"; then
+	echo "❌ ERROR: Found forbidden console statements!"
+	ERRORS=$((ERRORS + 1))
+fi
+
+# Check for HTML heading creation
+if grep -rn "createEl('h[1-6]'" src/ --include="*.ts" | grep -v "test.ts"; then
+	echo "❌ ERROR: Found HTML heading creation. Use Setting().setHeading()!"
+	ERRORS=$((ERRORS + 1))
+fi
+
+# Check for vault.delete
+if grep -rn "vault\.delete" src/ --include="*.ts" | grep -v "test.ts"; then
+	echo "❌ ERROR: Found vault.delete(). Use fileManager.trashFile()!"
+	ERRORS=$((ERRORS + 1))
+fi
+
+if [ $ERRORS -eq 0 ]; then
+	echo "✅ All Obsidian validation checks passed!"
+	exit 0
+else
+	echo "❌ Found $ERRORS validation error(s). Please fix before submitting."
+	exit 1
+fi
+```
+
+---
+
 ## 🚀 Running Tests
 
 ### All Tests
