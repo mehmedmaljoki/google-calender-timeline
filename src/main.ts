@@ -36,7 +36,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		// Add ribbon icon
 		this.addRibbonIcon('calendar', 'Open calendar timeline', () => {
-			this.activateView();
+			void this.activateView();
 		});
 
 		// Add commands
@@ -44,7 +44,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 			id: 'open-timeline',
 			name: 'Open timeline',
 			callback: () => {
-				this.activateView();
+				void this.activateView();
 			},
 		});
 
@@ -71,7 +71,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'connect-google',
-			name: 'Connect to Google calendar',
+			name: 'Connect to Google Calendar',
 			callback: async () => {
 				if (this.auth.isAuthenticated()) {
 					new Notice('Already connected to Google Calendar');
@@ -83,14 +83,14 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'disconnect-google',
-			name: 'Disconnect from Google calendar',
+			name: 'Disconnect from Google Calendar',
 			callback: async () => {
 				if (!this.auth.isAuthenticated()) {
 					new Notice('Not connected to Google Calendar');
 					return;
 				}
 				await this.auth.logout();
-				new Notice('Disconnected from Google calendar');
+				new Notice('Disconnected from Google Calendar');
 			},
 		});
 
@@ -144,7 +144,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		// Reveal the leaf
 		if (leaf) {
-			workspace.revealLeaf(leaf);
+			void workspace.revealLeaf(leaf);
 		}
 	}
 }

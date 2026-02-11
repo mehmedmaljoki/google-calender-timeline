@@ -68,7 +68,7 @@ export class CalendarAPI implements ICalendarAPI {
 			});
 
 			if (response.status !== 200) {
-				await this.handleErrorResponse(response);
+				this.handleErrorResponse(response);
 			}
 
 			const data: GoogleCalendarListResponse = response.json;
@@ -108,7 +108,7 @@ export class CalendarAPI implements ICalendarAPI {
 			});
 
 			if (response.status !== 200) {
-				await this.handleErrorResponse(response);
+				this.handleErrorResponse(response);
 			}
 
 			const data: GoogleEventsListResponse = response.json;
@@ -137,7 +137,7 @@ export class CalendarAPI implements ICalendarAPI {
 			});
 
 			if (response.status !== 200) {
-				await this.handleErrorResponse(response);
+				this.handleErrorResponse(response);
 			}
 
 			const event = response.json;
@@ -193,7 +193,7 @@ export class CalendarAPI implements ICalendarAPI {
 			});
 
 			if (response.status !== 200) {
-				await this.handleErrorResponse(response);
+				this.handleErrorResponse(response);
 			}
 
 			return response.json;
@@ -255,11 +255,7 @@ export class CalendarAPI implements ICalendarAPI {
 	/**
 	 * Handle API error responses
 	 */
-	private async handleErrorResponse(response: {
-		status: number;
-		json: unknown;
-		text: string;
-	}): Promise<never> {
+	private handleErrorResponse(response: { status: number; json: unknown; text: string }): never {
 		const statusCode = response.status;
 		let errorMessage = `API request failed with status ${statusCode}`;
 
@@ -286,7 +282,7 @@ export class CalendarAPI implements ICalendarAPI {
 		try {
 			await this.listCalendars();
 			return true;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}

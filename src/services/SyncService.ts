@@ -46,11 +46,11 @@ export class SyncService implements ISyncService {
 		const intervalMs = settings.syncInterval * 60 * 1000;
 
 		// Initial sync
-		this.syncNow();
+		void this.syncNow();
 
 		// Set up interval
 		this.syncIntervalId = window.setInterval(() => {
-			this.syncNow();
+			void this.syncNow();
 		}, intervalMs);
 	}
 

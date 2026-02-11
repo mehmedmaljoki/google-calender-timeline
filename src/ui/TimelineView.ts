@@ -35,7 +35,7 @@ export class TimelineView extends ItemView {
 		return 'calendar';
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): Promise<void> {
 		this.container = this.contentEl;
 		this.container.empty();
 		this.container.addClass('google-calendar-timeline-view');
@@ -53,13 +53,16 @@ export class TimelineView extends ItemView {
 
 		// Initial load
 		this.refreshTimeline();
+
+		return Promise.resolve();
 	}
 
-	async onClose(): Promise<void> {
+	onClose(): Promise<void> {
 		if (this.timeline) {
 			this.timeline.destroy();
 			this.timeline = null;
 		}
+		return Promise.resolve();
 	}
 
 	/**
@@ -124,14 +127,14 @@ export class TimelineView extends ItemView {
 		this.timeline.on('select', properties => {
 			if (properties.items.length > 0) {
 				const eventId = properties.items[0];
-				this.handleEventClick(eventId);
+				void this.handleEventClick(eventId);
 			}
 		});
 
 		// Handle double click
 		this.timeline.on('doubleClick', properties => {
 			if (properties.item) {
-				this.handleEventDoubleClick(properties.item);
+				void this.handleEventDoubleClick(properties.item);
 			}
 		});
 	}

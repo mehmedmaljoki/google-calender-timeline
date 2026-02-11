@@ -18,15 +18,15 @@ export class SettingsTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(containerEl).setName('Google Calendar Timeline Settings').setHeading();
+		new Setting(containerEl).setName('General').setHeading();
 
 		// Authentication Section
 		new Setting(containerEl).setName('Authentication').setHeading();
 
 		new Setting(containerEl)
-			.setName('Google Account')
+			.setName('Google account')
 			.setDesc(
-				this.plugin.auth.isAuthenticated() ? '✅ Connected to Google calendar' : '❌ Not connected'
+				this.plugin.auth.isAuthenticated() ? '✅ Connected to Google Calendar' : '❌ Not connected'
 			)
 			.addButton(button => {
 				if (this.plugin.auth.isAuthenticated()) {
@@ -69,7 +69,7 @@ export class SettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Sync interval')
-			.setDesc('How often to sync with Google calendar (minutes)')
+			.setDesc('How often to sync with Google Calendar (minutes)')
 			.addText(text =>
 				text
 					.setPlaceholder('15')
@@ -95,8 +95,8 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl).setName('Display').setHeading();
 
 		new Setting(containerEl)
-			.setName('Use Google calendar colors')
-			.setDesc('Use original calendar colors from Google')
+			.setName('Use Google Calendar colors')
+			.setDesc('Use original colors from Google Calendar')
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.useGoogleColors).onChange(async value => {
 					this.plugin.settings.useGoogleColors = value;
@@ -150,7 +150,7 @@ export class SettingsTab extends PluginSettingTab {
 			.setDesc('Folder path for created notes (leave empty for root)')
 			.addText(text =>
 				text
-					.setPlaceholder('Calendar/Events')
+					.setPlaceholder('Calendar/events')
 					.setValue(this.plugin.settings.noteLocation)
 					.onChange(async value => {
 						this.plugin.settings.noteLocation = value;

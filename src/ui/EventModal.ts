@@ -51,7 +51,7 @@ export class EventModal extends Modal {
 
 		// Create note button
 		const createNoteBtn = actions.createEl('button', {
-			text: 'Create Note',
+			text: 'Create note',
 			cls: 'mod-cta',
 		});
 		createNoteBtn.addEventListener('click', () => {
