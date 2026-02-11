@@ -1,54 +1,81 @@
-# Configuration for Label Actions
+# Configuration for Label Actions (v5 format)
 # Auto-labels PRs based on changed files
 
 feature:
-  - 'src/**/*.ts'
-  - '!src/**/*.test.ts'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/**/*.ts'
+          - '!src/**/*.test.ts'
+          - '!src/**/*.spec.ts'
 
 bug:
-  - any: ['fix/*', 'bugfix/*', 'hotfix/*']
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'fix/**/*'
+          - 'bugfix/**/*'
+          - 'hotfix/**/*'
 
 documentation:
-  - '*.md'
-  - 'docs/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.md'
+          - 'docs/**/*'
 
 dependencies:
-  - 'package.json'
-  - 'package-lock.json'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'package-lock.json'
 
 ci-cd:
-  - '.github/workflows/**'
-  - '.github/actions/**'
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
+          - '.github/actions/**'
 
 tests:
-  - 'tests/**/*'
-  - 'src/**/*.test.ts'
-  - 'src/**/*.spec.ts'
-  - 'jest.config.js'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'tests/**/*'
+          - 'src/**/*.test.ts'
+          - 'src/**/*.spec.ts'
+          - 'jest.config.js'
 
 ui:
-  - 'src/ui/**/*'
-  - 'styles/**/*'
-  - '*.css'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/ui/**/*'
+          - 'styles/**/*'
+          - '*.css'
 
 api:
-  - 'src/api/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/api/**/*'
 
 auth:
-  - 'src/auth/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/auth/**/*'
 
 services:
-  - 'src/services/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/services/**/*'
 
 security:
-  - 'SECURITY.md'
-  - '.github/dependabot.yml'
-  - 'src/auth/**/*'
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'SECURITY.md'
+          - '.github/dependabot.yml'
+          - 'src/auth/**/*'
 
 configuration:
-  - '*.json'
-  - '*.yml'
-  - '*.yaml'
-  - '.eslintrc*'
-  - '.prettierrc*'
-  - 'tsconfig.json'
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.json'
+          - '*.yml'
+          - '*.yaml'
+          - '.eslintrc*'
+          - '.prettierrc*'
+          - 'tsconfig.json'
