@@ -36,7 +36,6 @@ export class TimelineView extends ItemView {
 	}
 
 	onOpen(): Promise<void> {
-		console.log('[Timeline Debug] 🚀 Timeline View opening...');
 		this.container = this.contentEl;
 		this.container.empty();
 		this.container.addClass('google-calendar-timeline-view');
