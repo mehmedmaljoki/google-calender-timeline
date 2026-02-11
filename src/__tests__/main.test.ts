@@ -271,7 +271,9 @@ describe('GoogleCalendarTimelinePlugin', () => {
 
 		await syncNow?.callback();
 
-			expect(consoleErrorSpy).toHaveBeenCalledWith('Sync error:', error);
+		expect(consoleErrorSpy).toHaveBeenCalledWith('Sync error:', error);
+
+		authSpy.mockRestore();
 		syncSpy.mockRestore();
 		consoleErrorSpy.mockRestore();
 	});

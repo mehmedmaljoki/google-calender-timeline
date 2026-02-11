@@ -99,8 +99,7 @@ describe('EventModal', () => {
 
 		modal.onOpen();
 
-		const title = modal.contentEl.querySelector('h2');
-		expect(title?.textContent).toBe('Planning Meeting');
+		expect(modal.titleEl.textContent).toBe('Planning Meeting');
 		expect(modal.contentEl.querySelector('.event-details')).not.toBeNull();
 		expect(modal.contentEl.querySelector('.event-actions')).not.toBeNull();
 	});
