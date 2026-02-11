@@ -164,8 +164,7 @@ export class SettingsTab extends PluginSettingTab {
 					.addOption('custom', 'Custom Template')
 					.setValue(this.plugin.settings.fileNamingStrategy)
 					.onChange(async (value: string) => {
-						this.plugin.settings.fileNamingStrategy =
-							value as PluginSettings['fileNamingStrategy'];
+						this.plugin.settings.fileNamingStrategy = value as PluginSettings['fileNamingStrategy'];
 						await this.plugin.saveSettings();
 						this.display();
 					})
