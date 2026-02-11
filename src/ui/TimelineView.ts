@@ -71,9 +71,6 @@ export class TimelineView extends ItemView {
 	private createHeader(): void {
 		const header = this.container.createDiv('timeline-header');
 
-		// Title
-		header.createEl('h4', { text: 'Calendar timeline' });
-
 		// Controls
 		const controls = header.createDiv('timeline-controls');
 

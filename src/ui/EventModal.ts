@@ -22,7 +22,7 @@ export class EventModal extends Modal {
 		contentEl.addClass('calendar-event-modal');
 
 		// Title
-		contentEl.createEl('h2', { text: this.event.summary });
+		this.setTitle(this.event.summary);
 
 		// Event details
 		const detailsContainer = contentEl.createDiv('event-details');
