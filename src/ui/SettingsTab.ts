@@ -163,8 +163,9 @@ export class SettingsTab extends PluginSettingTab {
 					.addOption('date-title', 'Date - Title')
 					.addOption('custom', 'Custom Template')
 					.setValue(this.plugin.settings.fileNamingStrategy)
-					.onChange(async (value: PluginSettings['fileNamingStrategy']) => {
-						this.plugin.settings.fileNamingStrategy = value;
+					.onChange(async (value: string) => {
+						this.plugin.settings.fileNamingStrategy =
+							value as PluginSettings['fileNamingStrategy'];
 						await this.plugin.saveSettings();
 						this.display();
 					})
