@@ -152,4 +152,111 @@ describe('EventModal', () => {
 
 		expect(modal.contentEl.textContent).toContain('All day');
 	});
+
+	it('opens event in Google Calendar when button clicked', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({ htmlLink: 'https://calendar.google.com/event/123' });
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		const openSpy = jest.spyOn(window, 'open').mockImplementation(() => null);
+
+		modal.onOpen();
+
+		const openButton = Array.from(modal.contentEl.querySelectorAll('button')).find(
+			btn => btn.textContent === 'Open in Google Calendar'
+		);
+		expect(openButton).not.toBeNull();
+		openButton?.click();
+
+		expect(openSpy).toHaveBeenCalledWith('https://calendar.google.com/event/123', '_blank');
+		openSpy.mockRestore();
+	});
+
+	it('closes modal when close button clicked', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent();
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		const closeSpy = jest.spyOn(modal, 'close');
+
+		modal.onOpen();
+
+		const closeButton = Array.from(modal.contentEl.querySelectorAll('button')).find(
+			btn => btn.textContent === 'Close'
+		);
+		expect(closeButton).not.toBeNull();
+		closeButton?.click();
+
+		expect(closeSpy).toHaveBeenCalled();
+		closeSpy.mockRestore();
+	});
+
+	it('renders attendees when present', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({
+			attendees: [
+				{ email: 'alice@example.com', displayName: 'Alice' },
+				{ email: 'bob@example.com' },
+			],
+		});
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		modal.onOpen();
+
+		expect(modal.contentEl.textContent).toContain('Alice');
+		expect(modal.contentEl.textContent).toContain('bob@example.com');
+	});
+
+	it('does not render location when not provided', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({ location: undefined });
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		modal.onOpen();
+
+		expect(modal.contentEl.textContent).not.toContain('📍 Where');
+	});
+
+	it('does not render description when not provided', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({ description: undefined });
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		modal.onOpen();
+
+		expect(modal.contentEl.textContent).not.toContain('📝 Description');
+	});
+
+	it('does not render attendees when not provided', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({ attendees: undefined });
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		modal.onOpen();
+
+		expect(modal.contentEl.textContent).not.toContain('👥 Attendees');
+	});
+
+	it('formats timed events with start and end time', () => {
+		const plugin = createPlugin();
+		const event = createMockEvent({
+			start: { dateTime: '2024-02-01T10:00:00-05:00' },
+			end: { dateTime: '2024-02-01T11:30:00-05:00' },
+		});
+		const modal = new EventModal(plugin.app, event, plugin);
+		(modal as unknown as { contentEl: HTMLElement }).contentEl = withHelpers(modal.contentEl);
+
+		modal.onOpen();
+
+		const content = modal.contentEl.textContent || '';
+		expect(content).toContain('📅 When');
+		// Should contain time range
+		expect(content).toMatch(/\d{1,2}:\d{2}/);
+	});
 });

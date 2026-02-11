@@ -77,7 +77,13 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 					new Notice('Already connected to Google Calendar');
 					return;
 				}
-				await this.auth.login();
+				try {
+					await this.auth.login();
+				} catch (error) {
+					const message = error instanceof Error ? error.message : 'Unknown error';
+					new Notice('Login failed: ' + message);
+					console.error('Login failed:', error);
+				}
 			},
 		});
 
@@ -89,8 +95,14 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 					new Notice('Not connected to Google Calendar');
 					return;
 				}
-				await this.auth.logout();
-				new Notice('Disconnected from Google Calendar');
+				try {
+					await this.auth.logout();
+					new Notice('Disconnected from Google Calendar');
+				} catch (error) {
+					const message = error instanceof Error ? error.message : 'Unknown error';
+					new Notice('Logout failed: ' + message);
+					console.error('Logout failed:', error);
+				}
 			},
 		});
 

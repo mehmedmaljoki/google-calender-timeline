@@ -191,6 +191,10 @@ export class Modal {
 		// Mock implementation
 	}
 
+	setTitle(title: string): void {
+		this.titleEl.textContent = title;
+	}
+
 	onOpen(): void {
 		// Override in subclass
 	}
