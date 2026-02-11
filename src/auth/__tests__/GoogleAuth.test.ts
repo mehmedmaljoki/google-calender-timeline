@@ -3,7 +3,7 @@
  */
 
 import { createMockToken, createMockTokenManager } from '../../__mocks__/factories';
-import { AuthenticationError } from '../../types/calendar';
+import { AuthenticationError, OAuthToken } from '../../types/calendar';
 import { GoogleAuth } from '../GoogleAuth';
 import { TokenManager } from '../TokenManager';
 
@@ -206,6 +206,61 @@ describe('GoogleAuth', () => {
 
 			// Assert
 			expect(global.fetch).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('login', () => {
+		it('should complete login flow and close the window', async () => {
+			const closeMock = jest.fn();
+			const openSpy = jest
+				.spyOn(window, 'open')
+				.mockReturnValue({ closed: false, close: closeMock } as unknown as Window);
+
+			const authInternal = auth as unknown as {
+				buildAuthUrl: () => string;
+				waitForAuthCode: () => Promise<string>;
+				exchangeCodeForToken: (code: string) => Promise<OAuthToken>;
+			};
+
+			const buildSpy = jest.spyOn(authInternal, 'buildAuthUrl').mockReturnValue('http://test');
+			const waitSpy = jest.spyOn(authInternal, 'waitForAuthCode').mockResolvedValue('code');
+			const exchangeSpy = jest
+				.spyOn(authInternal, 'exchangeCodeForToken')
+				.mockResolvedValue(createMockToken());
+
+			await auth.login();
+
+			expect(mockTokenManager.saveToken).toHaveBeenCalled();
+			expect(closeMock).toHaveBeenCalled();
+
+			buildSpy.mockRestore();
+			waitSpy.mockRestore();
+			exchangeSpy.mockRestore();
+			openSpy.mockRestore();
+		});
+
+		it('should close the window on login failure', async () => {
+			const closeMock = jest.fn();
+			const openSpy = jest
+				.spyOn(window, 'open')
+				.mockReturnValue({ closed: false, close: closeMock } as unknown as Window);
+
+			const authInternal = auth as unknown as {
+				buildAuthUrl: () => string;
+				waitForAuthCode: () => Promise<string>;
+			};
+
+			const buildSpy = jest.spyOn(authInternal, 'buildAuthUrl').mockReturnValue('http://test');
+			const waitSpy = jest
+				.spyOn(authInternal, 'waitForAuthCode')
+				.mockRejectedValue(new Error('No code'));
+
+			await expect(auth.login()).rejects.toThrow(AuthenticationError);
+			expect(closeMock).toHaveBeenCalled();
+
+			buildSpy.mockRestore();
+			waitSpy.mockRestore();
+			openSpy.mockRestore();
 		});
 	});
 });

@@ -29,6 +29,13 @@ type DropdownComponent = {
 	onChange: (cb: (value: string) => void) => void;
 };
 
+export const __testUtils = {
+	buttonClicks: [] as Array<() => void>,
+	toggleChanges: [] as Array<(value: boolean) => void>,
+	textChanges: [] as Array<(value: string) => void>,
+	dropdownChanges: [] as Array<(value: string) => void>,
+};
+
 type WorkspaceMock = {
 	getLeavesOfType: jest.Mock;
 	getRightLeaf: jest.Mock;
@@ -93,7 +100,9 @@ export class Setting {
 		const button: ButtonComponent = {
 			setButtonText: (_text: string) => button,
 			setCta: () => button,
-			onClick: (_cb: () => void) => {},
+			onClick: (_cb: () => void) => {
+				__testUtils.buttonClicks.push(_cb);
+			},
 		};
 		cb(button);
 		return this;
@@ -102,7 +111,9 @@ export class Setting {
 	addToggle(cb: (toggle: ToggleComponent) => void): this {
 		const toggle: ToggleComponent = {
 			setValue: (_value: boolean) => toggle,
-			onChange: (_cb: (value: boolean) => void) => {},
+			onChange: (_cb: (value: boolean) => void) => {
+				__testUtils.toggleChanges.push(_cb);
+			},
 		};
 		cb(toggle);
 		return this;
@@ -112,7 +123,9 @@ export class Setting {
 		const text: TextComponent = {
 			setPlaceholder: (_text: string) => text,
 			setValue: (_value: string) => text,
-			onChange: (_cb: (value: string) => void) => {},
+			onChange: (_cb: (value: string) => void) => {
+				__testUtils.textChanges.push(_cb);
+			},
 		};
 		cb(text);
 		return this;
@@ -122,7 +135,9 @@ export class Setting {
 		const textArea: TextAreaComponent = {
 			setPlaceholder: (_text: string) => textArea,
 			setValue: (_value: string) => textArea,
-			onChange: (_cb: (value: string) => void) => {},
+			onChange: (_cb: (value: string) => void) => {
+				__testUtils.textChanges.push(_cb);
+			},
 			inputEl: { rows: 10, cols: 50 },
 		};
 		cb(textArea);
@@ -133,7 +148,9 @@ export class Setting {
 		const dropdown: DropdownComponent = {
 			addOption: (_value: string, _display: string) => dropdown,
 			setValue: (_value: string) => dropdown,
-			onChange: (_cb: (value: string) => void) => {},
+			onChange: (_cb: (value: string) => void) => {
+				__testUtils.dropdownChanges.push(_cb);
+			},
 		};
 		cb(dropdown);
 		return this;
