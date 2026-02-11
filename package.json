@@ -4,6 +4,7 @@
 	"description": "Obsidian plugin to integrate Google Calendar with interactive timeline visualization",
 	"main": "main.js",
 	"scripts": {
+		"setup:dev": "bash scripts/setup-dev.sh",
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"build:check": "tsc --noEmit",

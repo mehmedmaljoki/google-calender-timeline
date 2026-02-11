@@ -1,6 +1,8 @@
 import builtins from 'builtin-modules';
 import esbuild from 'esbuild';
-import { dirname } from 'path';
+import { copyFileSync, existsSync, mkdirSync } from 'fs';
+import { homedir } from 'os';
+import { dirname, join } from 'path';
 import process from 'process';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +16,44 @@ if you want to view the source, please visit the github repository of this plugi
 `;
 
 const prod = process.argv[2] === 'production';
+
+// Get test vault path from environment or use default
+const testVault = process.env.OBSIDIAN_VAULT || join(homedir(), 'obsidian-test-vault');
+const pluginDir = join(testVault, '.obsidian', 'plugins', 'google-calendar-timeline');
+
+// Copy files to test vault (only in dev mode)
+function copyFilesToVault() {
+	if (prod) return;
+
+	try {
+		// Check if vault exists
+		if (!existsSync(testVault)) {
+			console.warn(`⚠️  Test vault not found at: ${testVault}`);
+			console.warn('   Run: npm run setup:dev');
+			return;
+		}
+
+		// Ensure plugin directory exists
+		mkdirSync(pluginDir, { recursive: true });
+
+		// Copy main.js
+		copyFileSync('main.js', join(pluginDir, 'main.js'));
+
+		// Copy manifest.json
+		if (existsSync('manifest.json')) {
+			copyFileSync('manifest.json', join(pluginDir, 'manifest.json'));
+		}
+
+		// Copy styles.css
+		if (existsSync('styles.css')) {
+			copyFileSync('styles.css', join(pluginDir, 'styles.css'));
+		}
+
+		console.log('✅ Plugin files copied to test vault');
+	} catch (error) {
+		console.error('❌ Failed to copy files to vault:', error.message);
+	}
+}
 
 const context = await esbuild.context({
 	banner: {
@@ -44,11 +84,24 @@ const context = await esbuild.context({
 	treeShaking: true,
 	outfile: 'main.js',
 	minify: prod,
+	plugins: [
+		{
+			name: 'copy-to-vault',
+			setup(build) {
+				build.onEnd(() => {
+					copyFilesToVault();
+				});
+			},
+		},
+	],
 });
 
 if (prod) {
 	await context.rebuild();
 	process.exit(0);
 } else {
+	console.log('👀 Watching for changes...');
+	console.log(`📁 Test vault: ${testVault}`);
+	console.log('💡 Press Cmd+R in Obsidian to reload after changes\n');
 	await context.watch();
 }
