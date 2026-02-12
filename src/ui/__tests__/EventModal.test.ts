@@ -163,7 +163,7 @@ describe('EventModal', () => {
 		modal.onOpen();
 
 		const openButton = Array.from(modal.contentEl.querySelectorAll('button')).find(
-			btn => btn.textContent === 'Open in Google Calendar'
+			btn => btn.textContent === 'Open in Google calendar'
 		);
 		expect(openButton).not.toBeNull();
 		openButton?.click();
