@@ -93,8 +93,8 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl).setName('Display').setHeading();
 
 		new Setting(containerEl)
-			.setName('Use Google Calendar colors.')
-			.setDesc('Use original colors from Google Calendar.')
+			.setName('Use Google Calendar colors')
+			.setDesc('Use original colors from Google Calendar')
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.useGoogleColors).onChange(async value => {
 					this.plugin.settings.useGoogleColors = value;
