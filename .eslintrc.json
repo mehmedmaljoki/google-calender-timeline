@@ -31,5 +31,5 @@
 		"semi": ["error", "always"],
 		"quotes": ["error", "single", { "avoidEscape": true }]
 	},
-	"ignorePatterns": ["node_modules/", "dist/", "main.js", "*.config.js", "*.config.mjs"]
+	"ignorePatterns": ["node_modules/", "dist/", "main.js", "*.config.js", "*.config.mjs", "version-bump.mjs"]
 }
