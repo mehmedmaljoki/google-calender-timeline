@@ -62,7 +62,7 @@ export class EventModal extends Modal {
 		});
 
 		// Open in Google Calendar button
-		const openBtn = actions.createEl('button', { text: 'Open in Google Calendar.' });
+		const openBtn = actions.createEl('button', { text: 'Open in Google calendar' });
 		openBtn.addEventListener('click', () => {
 			window.open(this.event.htmlLink, '_blank');
 		});
