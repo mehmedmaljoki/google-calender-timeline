@@ -1,6 +1,6 @@
 {
 	"name": "google-calendar-timeline",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Obsidian plugin to integrate Google Calendar with interactive timeline visualization",
 	"main": "main.js",
 	"scripts": {

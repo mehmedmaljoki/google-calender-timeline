@@ -1,7 +1,7 @@
 {
 	"id": "google-calendar-timeline",
 	"name": "Google Calendar Timeline",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"minAppVersion": "1.4.0",
 	"description": "Integrate Google Calendar with an interactive timeline view. Visualize your schedule and create notes from calendar events.",
 	"author": "mehmedmaljoki",
