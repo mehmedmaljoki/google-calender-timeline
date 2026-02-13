@@ -67,7 +67,7 @@ export class SettingsTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Sync interval')
-			.setDesc('How often to sync with Google Calendar (minutes).')
+			.setDesc('How often to sync with google calendar (minutes).')
 			.addText(text =>
 				text
 					.setPlaceholder('15')
@@ -93,8 +93,8 @@ export class SettingsTab extends PluginSettingTab {
 		new Setting(containerEl).setName('Display').setHeading();
 
 		new Setting(containerEl)
-			.setName('Use Google Calendar colors')
-			.setDesc('Use original colors from Google Calendar')
+			.setName('Use google calendar colors')
+			.setDesc('Use original colors from google calendar')
 			.addToggle(toggle =>
 				toggle.setValue(this.plugin.settings.useGoogleColors).onChange(async value => {
 					this.plugin.settings.useGoogleColors = value;

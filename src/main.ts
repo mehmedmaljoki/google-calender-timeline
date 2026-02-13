@@ -54,7 +54,7 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 			icon: 'refresh-cw',
 			callback: async () => {
 				if (!this.auth.isAuthenticated()) {
-					new Notice('Please connect to Google Calendar first');
+					new Notice('Please connect to google calendar first');
 					return;
 				}
 				try {
@@ -71,10 +71,10 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'connect-google',
-			name: 'Connect to Google Calendar',
+			name: 'Connect to google calendar',
 			callback: async () => {
 				if (this.auth.isAuthenticated()) {
-					new Notice('Already connected to Google Calendar');
+					new Notice('Already connected to google calendar');
 					return;
 				}
 				try {
@@ -89,15 +89,15 @@ export default class GoogleCalendarTimelinePlugin extends Plugin {
 
 		this.addCommand({
 			id: 'disconnect-google',
-			name: 'Disconnect from Google Calendar',
+			name: 'Disconnect from google calendar',
 			callback: async () => {
 				if (!this.auth.isAuthenticated()) {
-					new Notice('Not connected to Google Calendar');
+					new Notice('Not connected to google calendar');
 					return;
 				}
 				try {
 					await this.auth.logout();
-					new Notice('Disconnected from Google Calendar');
+					new Notice('Disconnected from google calendar');
 				} catch (error) {
 					const message = error instanceof Error ? error.message : 'Unknown error';
 					new Notice('Logout failed: ' + message);

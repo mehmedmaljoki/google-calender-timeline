@@ -34,7 +34,7 @@ export class GoogleAuth implements IAuth {
 	 */
 	async login(): Promise<void> {
 		try {
-			new Notice('Connecting to Google…');
+			new Notice('Connecting to google...');
 
 			const authUrl = this.buildAuthUrl();
 
@@ -54,10 +54,10 @@ export class GoogleAuth implements IAuth {
 			// Save token
 			await this.tokenManager.saveToken(token);
 
-			new Notice('Successfully authenticated with Google Calendar');
+			new Notice('Successfully authenticated with google calendar');
 		} catch (error) {
 			console.error('Authentication error:', error);
-			new Notice('Failed to authenticate with Google Calendar');
+			new Notice('Failed to authenticate with google calendar');
 			throw new AuthenticationError(
 				error instanceof Error ? error.message : 'Authentication failed'
 			);
@@ -73,7 +73,7 @@ export class GoogleAuth implements IAuth {
 	 */
 	async logout(): Promise<void> {
 		await this.tokenManager.clearToken();
-		new Notice('Logged out from Google Calendar');
+		new Notice('Logged out from google calendar');
 	}
 
 	/**
