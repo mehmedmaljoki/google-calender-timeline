@@ -75,5 +75,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/mehmedmaljoki/google-calender-timeline/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/mehmedmaljoki/google-calender-timeline/releases/tag/v1.0.0
+[Unreleased]: https://github.com/mehmedmaljoki/google-calender-timeline/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/mehmedmaljoki/google-calender-timeline/releases/tag/1.0.0

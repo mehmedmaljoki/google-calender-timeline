@@ -79,7 +79,7 @@ Update version in **3 locations**:
 
 ```powershell
 git add .
-git commit -m "Release v1.0.0"
+git commit -m "Release 1.0.0"
 git push origin main
 ```
 
@@ -89,37 +89,40 @@ git push origin main
 2. Click "Create a new release"
 3. Fill in:
    - **Tag version**: `1.0.0`
-   - **Release title**: `v1.0.0 - Initial Release`
+   - **Release title**: `1.0.0 - Initial release`
    - **Description**:
 
      ```markdown
-     # Google Calendar Timeline v1.0.0
 
-     ## 🎉 Initial Release
-
-     ### Features
-
-     - ✅ Google Calendar OAuth 2.0 integration
-     - 📅 Interactive timeline visualization
-     - 📝 Create Obsidian notes from calendar events
-     - 🔄 Auto-sync with configurable intervals
-     - 🎨 Multi-calendar support with original colors
-     - ⚙️ Customizable note templates
-     - 🔧 Flexible settings and configuration
-
-     ### Installation
-
-     See [INSTALLATION.md](docs/INSTALLATION.md) for setup instructions.
-
-     ### Known Issues
-
-     - OAuth credentials must be manually configured
-
-     ### Requirements
-
-     - Obsidian 1.4.0+
-     - Google Calendar API access
      ```
+
+   # Google Calendar Timeline 1.0.0
+
+   ## 🎉 Initial Release
+
+   ### Features
+   - ✅ Google Calendar OAuth 2.0 integration
+   - 📅 Interactive timeline visualization
+   - 📝 Create Obsidian notes from calendar events
+   - 🔄 Auto-sync with configurable intervals
+   - 🎨 Multi-calendar support with original colors
+   - ⚙️ Customizable note templates
+   - 🔧 Flexible settings and configuration
+
+   ### Installation
+
+   See [INSTALLATION.md](docs/INSTALLATION.md) for setup instructions.
+
+   ### Known Issues
+   - OAuth credentials must be manually configured
+
+   ### Requirements
+   - Obsidian 1.4.0+
+   - Google Calendar API access
+
+   ```
+
+   ```
 
 4. **Attach files** (upload these 3 files):
    - `main.js`
@@ -159,10 +162,11 @@ git push origin main
      - **Author**: YOUR_NAME
      - **Description**: Sync Google Calendar events and visualize them in an interactive timeline. Create notes directly from calendar events.
      - **Repository**: https://github.com/YOUR_USERNAME/google-calendar-timeline
-     - **Initial Release**: v1.0.0
+     ```
+
+   - **Initial Release**: 1.0.0
 
      ## Checklist
-
      - [x] Plugin builds successfully
      - [x] All required files included in release
      - [x] Documentation complete
@@ -175,6 +179,9 @@ git push origin main
      ## Additional Notes
 
      This plugin provides Google Calendar integration with OAuth 2.0 authentication. Users must configure their own Google OAuth credentials for security reasons.
+
+     ```
+
      ```
 
 4. **Submit PR** and wait for review
