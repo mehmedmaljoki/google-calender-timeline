@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Daily notes integration
 - Mobile support optimization
 
+## [1.0.4] - 2026-02-15
+
+### Changed
+
+- Bumped plugin release version to `1.0.4`
+- Updated Obsidian release metadata in `version.json` and `versions.json`
+
+### CI
+
+- Release workflow is now ready to publish assets for the `1.0.4` tag
+
 ## [1.0.0] - TBD
 
 ### Added
@@ -75,5 +86,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/mehmedmaljoki/google-calender-timeline/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/mehmedmaljoki/google-calender-timeline/compare/1.0.4...HEAD
+[1.0.4]: https://github.com/mehmedmaljoki/google-calender-timeline/compare/1.0.3...1.0.4
 [1.0.0]: https://github.com/mehmedmaljoki/google-calender-timeline/releases/tag/1.0.0
