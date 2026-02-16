@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Check PR title follows Conventional Commits
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -108,7 +108,7 @@ jobs:
             }
 
       - name: Check PR description
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -140,7 +140,7 @@ jobs:
             }
 
       - name: Check for linked issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
