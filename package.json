@@ -40,7 +40,7 @@
 		"url": "https://github.com/mehmedmaljoki/google-calender-timeline/issues"
 	},
 	"devDependencies": {
-		"@eslint/compat": "^2.0.2",
+		"@eslint/compat": "^2.0.3",
 		"@eslint/eslintrc": "^3.3.3",
 		"@types/jest": "^29.5.11",
 		"@types/node": "^20.19.33",
